@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import CopyButton from "./CopyButton";
+import { ClipboardContentType } from "../events";
 export default function ImageCard({
+  databaseId,
   src,
   className,
 }: {
+  databaseId: string;
   src: string;
   className?: string;
 }) {
@@ -12,7 +15,8 @@ export default function ImageCard({
   if (hide) return null;
   return (
     <CopyButton
-      contentToCopy="abc"
+      contentType={ClipboardContentType.Image}
+      contentToCopy={databaseId}
       className="relative flex-shrink-0 h-40 overflow-hidden border rounded-lg group"
     >
       <img

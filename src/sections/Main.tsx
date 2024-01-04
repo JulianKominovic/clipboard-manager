@@ -32,9 +32,18 @@ export default function Main() {
   return (
     <div className="w-full px-4">
       <RecentItems>
-        {imagesItems.slice(0, 10).map((item, index) => {
-          return <ImageCard src={item.imageSrc as string} key={index} />;
-        })}
+        {imagesItems
+          .slice(0, 10)
+          .sort((a, b) => b.id.localeCompare(a.id))
+          .map((item, index) => {
+            return (
+              <ImageCard
+                databaseId={item.id}
+                src={item.imageSrc as string}
+                key={index}
+              />
+            );
+          })}
       </RecentItems>
     </div>
   );

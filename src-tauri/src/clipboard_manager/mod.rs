@@ -1,22 +1,21 @@
 use arboard::Clipboard;
-use base64::{engine::general_purpose, Engine as _};
 use chrono::{DateTime, Utc};
 use clipboard_master::{CallbackResult, ClipboardHandler};
+use core::hash::Hash;
 use homedir::get_my_home;
-use image::{DynamicImage, ImageBuffer, ImageOutputFormat};
+use image::{DynamicImage, ImageBuffer};
 use once_cell::sync::Lazy;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::{
+    collections::hash_map::DefaultHasher,
     fs,
-    io::{self, Cursor},
+    hash::Hasher,
+    io::{self},
     path::Path,
     sync::{Arc, Mutex},
     time::SystemTime,
 };
-use tauri::{api::path::app_data_dir, utils::config::BundleConfig, PathResolver};
-use uuid::Uuid;
-
 pub static HOME_PATH: Lazy<String> = Lazy::new(|| {
     let home = get_my_home().unwrap();
     let string_home = home.unwrap().to_str().unwrap().to_string();
@@ -39,95 +38,78 @@ pub static CLIPBOARD_INSTANCE: Lazy<Arc<Mutex<Clipboard>>> = Lazy::new(|| {
 
 pub struct Handler;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Hash, Serialize, Deserialize, Debug)]
 pub enum ClipboardContentType {
-    Text,
-    Image,
-    File,
+    Text = 0,
+    Image = 1,
+    File = 2,
+    Html = 3,
 }
-// #[derive(Serialize, Deserialize, Debug)]
-// pub struct Image {
-//     pub bytes: Vec<u8>,
-//     pub width: usize,
-//     pub height: usize,
-// }
-// #[derive(Serialize, Deserialize, Debug)]
-// pub struct ImageForFrontend {
-//     pub base64_image: String,
-//     pub width: usize,
-//     pub height: usize,
-// }
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ClipboardHistoryItem {
     pub content_type: ClipboardContentType,
     pub text: Option<String>,
-    pub image_filename: Option<String>,
     pub timestamp: String,
+    pub image_filename: Option<String>,
+    pub image_binary: Option<Vec<u8>>,
+    pub image_width: Option<u32>,
+    pub image_height: Option<u32>,
 }
-// #[derive(Serialize, Deserialize, Debug)]
-// pub struct ClipboardHistoryItemForFrontend {
-//     pub content_type: ClipboardContentType,
-//     pub text: Option<String>,
-//     pub image: Option<ImageForFrontend>,
-//     pub timestamp: String,
-// }
+
 impl ClipboardHistoryItem {
     fn new(
         content_type: ClipboardContentType,
         text: Option<String>,
         image_filename: Option<String>,
         timestamp: String,
+        image_binary: Option<Vec<u8>>,
+        image_width: Option<u32>,
+        image_height: Option<u32>,
     ) -> Self {
         Self {
             content_type,
             text,
             image_filename,
             timestamp,
+            image_binary,
+            image_width,
+            image_height,
         }
     }
 }
-// impl ClipboardHistoryItemForFrontend {
-//     fn new(
-//         content_type: ClipboardContentType,
-//         text: Option<String>,
-//         image: Option<ImageForFrontend>,
-//         timestamp: String,
-//     ) -> Self {
-//         Self {
-//             content_type,
-//             text,
-//             image,
-//             timestamp,
-//         }
-//     }
-// }
-// impl Hash for ClipboardHistoryItem {
-//     fn hash<H: Hasher>(&self, state: &mut H) {
-//         self.content_type.hash(state);
-//         self.timestamp.hash(state);
-//         if self.text.is_some() {
-//             self.text.hash(state);
-//         }
-//         if self.image.is_some() {
-//             let image = self.image.as_ref().unwrap();
-//             image.bytes.hash(state);
-//             image.width.hash(state);
-//             image.height.hash(state);
-//             image.format.hash(state);
-//         }
-//     }
-// }
 
-fn push_clipboard_item_to_database(clipboard_item: ClipboardHistoryItem) {
-    // let mut hasher = DefaultHasher::new();
-    // clipboard_item.hash(&mut hasher);
-    // let hash = hasher.finish();
-    // let hash = hash.to_string();
+impl Hash for ClipboardHistoryItem {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        if self.text.is_some() {
+            self.text.hash(state);
+        }
+        if self.image_binary.is_some() {
+            self.image_binary.hash(state);
+        }
+    }
+}
+
+fn push_clipboard_item_to_database(mut clipboard_item: ClipboardHistoryItem) -> String {
+    let mut hasher = DefaultHasher::new();
+    clipboard_item.hash(&mut hasher);
+    let hash = hasher.finish();
+    let hash = hash.to_string();
+
+    clipboard_item.image_binary = None;
+    clipboard_item.image_filename = Some(hash.clone());
     let encoded_item: Vec<u8> = bincode::serialize(&clipboard_item).unwrap();
-    let id = DATABASE_INSTANCE.generate_id().unwrap().to_string();
     DATABASE_INSTANCE
-        .insert(id, encoded_item.as_slice())
+        .insert(hash.clone(), encoded_item.as_slice())
         .unwrap();
+    hash
+}
+
+pub fn get_image_path_from_hash(hash: String) -> String {
+    let database_path = DATABASE_PATH.lock().unwrap().clone();
+    let images_path = Path::new(&database_path).join("images");
+    let image_filepath = images_path.join(&format!("{}.png", hash));
+    image_filepath.to_str().unwrap().to_string()
 }
 
 impl ClipboardHandler for Handler {
@@ -143,9 +125,7 @@ impl ClipboardHandler for Handler {
         if image.is_ok() {
             println!("Image is saving");
             let image = image.unwrap();
-            let image_filename = Uuid::new_v4().to_string();
             let images_path = Path::new(&database_path).join("images");
-            let image_filepath = images_path.join(&format!("{}.png", image_filename));
 
             let imgbuf = ImageBuffer::from_raw(
                 image.width as u32,
@@ -154,27 +134,40 @@ impl ClipboardHandler for Handler {
             )
             .unwrap();
             let imgbuf = DynamicImage::ImageRgba8(imgbuf);
-            if let Ok(_ret) = fs::create_dir(images_path) {};
-            imgbuf.save(image_filepath.to_str().unwrap()).unwrap();
 
             let clipboard_item = ClipboardHistoryItem::new(
                 ClipboardContentType::Image,
                 None,
-                Some(image_filename),
+                None,
                 now.to_string(),
+                Some(imgbuf.as_bytes().to_vec()),
+                Some(image.width as u32),
+                Some(image.height as u32),
             );
-            push_clipboard_item_to_database(clipboard_item);
+
+            let hash = push_clipboard_item_to_database(clipboard_item);
+            let image_filepath = get_image_path_from_hash(hash);
+            if let Ok(_ret) = fs::create_dir(images_path) {};
+            imgbuf.save(image_filepath).unwrap();
             return CallbackResult::Next;
         }
 
-        let text = lock.get_text().unwrap();
-        let clipboard_item = ClipboardHistoryItem::new(
-            ClipboardContentType::Text,
-            Some(text),
-            None,
-            now.to_string(),
-        );
-        push_clipboard_item_to_database(clipboard_item);
+        let text = lock.get_text();
+
+        if text.is_ok() {
+            let text = text.unwrap();
+            let clipboard_item = ClipboardHistoryItem::new(
+                ClipboardContentType::Text,
+                Some(text),
+                None,
+                now.to_string(),
+                None,
+                None,
+                None,
+            );
+
+            push_clipboard_item_to_database(clipboard_item);
+        }
 
         CallbackResult::Next
     }
@@ -184,22 +177,21 @@ impl ClipboardHandler for Handler {
         CallbackResult::Next
     }
 }
-// fn image_to_base64(img: &DynamicImage) -> String {
-//     let mut image_data: Vec<u8> = Vec::new();
-//     img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
-//         .unwrap();
-//     let res_base64 = general_purpose::STANDARD.encode(image_data);
-//     format!("data:image/png;base64,{}", res_base64)
-// }
 
-pub fn get_all_clipboard_items() -> Vec<ClipboardHistoryItem> {
+pub fn get_all_clipboard_items() -> Vec<(String, ClipboardHistoryItem)> {
     let items = DATABASE_INSTANCE.iter().par_bridge().map(|item| {
-        let (_, value) = item.unwrap();
+        let (key, value) = item.unwrap();
         let clipboard_item: ClipboardHistoryItem = bincode::deserialize(&value).unwrap();
-
-        clipboard_item
+        let key = String::from_utf8(key.to_vec()).unwrap();
+        (key, clipboard_item)
     });
 
     println!("Ready items!");
     items.collect()
+}
+
+pub fn get_clipboard_item(hash: String) -> ClipboardHistoryItem {
+    let value = DATABASE_INSTANCE.get(hash).unwrap();
+    let clipboard_item: ClipboardHistoryItem = bincode::deserialize(&value.unwrap()).unwrap();
+    clipboard_item
 }
