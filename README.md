@@ -1,16 +1,22 @@
-# Tauri + React + Typescript
+## Goal
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+- [x] Create a simple clipboard manager for linux
+- [x] Save clipboard history to database (`~/.clipboard_history/db`)
 
-## Front
-- React
-- Typescript
-- Tailwind
+## Dev dependencies
 
-## Backend
-- Rust
-- Specta (autogen typescript code based in invoke handlers)
+```bash
+# sudo apt install xclip
+sudo apt-get install xorg-dev libxcb-shape0-dev libxcb-xfixes0-dev
+```
 
-## Recommended IDE Setup
+## Libraries used
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- `arboard` - for clipboard management
+- `chrono` - for date and time
+- `clipboard_master` - clipboard event listener
+- `homedir` - for getting home directory
+- `once_cell` - for lazy static initialization
+- `serde` - for serialization and deserialization
+- `sled` - for database
+- `bincode` - for binary serialization and deserialization

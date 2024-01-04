@@ -8,12 +8,33 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "tauri-ts-react-vite-tailwind-extras",
+    "productName": "Clipboard manager",
     "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "all": false,
+      "protocol": {
+        "all": false,
+        "asset": true,
+        "assetScope": ["$APPLOCALDATA/**"]
+      },
+      "path": {
+        "all": true
+      },
+      "fs": {
+        "all": false,
+        "copyFile": false,
+        "createDir": false,
+        "exists": false,
+        "readDir": true,
+        "readFile": true,
+        "removeDir": false,
+        "removeFile": false,
+        "renameFile": false,
+        "scope": ["$RESOURCE/**", "$APPLOCALDATA/**"],
+        "writeFile": false
+      }
     },
     "bundle": {
       "active": true,
@@ -30,7 +51,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.jkominovic.clipboardmanager",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -49,17 +70,18 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
     },
     "updater": {
       "active": false
     },
+
     "windows": [
       {
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "tauri-ts-react-vite-tailwind-extras",
+        "title": "Clipboard manager",
         "width": 800
       }
     ]
