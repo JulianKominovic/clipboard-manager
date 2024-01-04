@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ImageCard from "../components/ImageCard";
 import RecentItems from "./main/RecentItems";
 import {
@@ -14,6 +14,14 @@ export default function Main() {
   const [clipboardHistory, setClipboardHistory] = useState<
     ClipboardHistoryItemWithImage[]
   >([]);
+  const { imagesItems, textItems } = useMemo(() => {
+    return {
+      imagesItems: clipboardHistory.filter(
+        (item) => item.imageSrc && item.content_type === "Image"
+      ),
+      textItems: clipboardHistory.filter((item) => item.text),
+    };
+  }, [clipboardHistory]);
   useEffect(() => {
     getClipboardHistory().then((history) => {
       setClipboardHistory(history);
@@ -24,16 +32,8 @@ export default function Main() {
   return (
     <div className="w-full px-4">
       <RecentItems>
-        {/* <ImageCard src="https://www.sketchappsources.com/resources/source-image/memoji-icons-egorkomarov.png" />
-        <ImageCard src="https://www.sketchappsources.com/resources/source-image/memoji-icons-egorkomarov.png" />
-        <ImageCard src="https://www.sketchappsources.com/resources/source-image/memoji-icons-egorkomarov.png" />
-        <ImageCard src="https://www.sketchappsources.com/resources/source-image/memoji-icons-egorkomarov.png" />
-        <ImageCard src="https://www.sketchappsources.com/resources/source-image/memoji-icons-egorkomarov.png" />
-        <ImageCard src="https://www.sketchappsources.com/resources/source-image/memoji-icons-egorkomarov.png" /> */}
-        {clipboardHistory.map((item, index) => {
-          if (item.content_type === "Image" && item.imageSrc) {
-            return <ImageCard src={item.imageSrc} key={index} />;
-          }
+        {imagesItems.slice(0, 10).map((item, index) => {
+          return <ImageCard src={item.imageSrc as string} key={index} />;
         })}
       </RecentItems>
     </div>

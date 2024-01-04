@@ -20,3 +20,12 @@ sudo apt-get install xorg-dev libxcb-shape0-dev libxcb-xfixes0-dev
 - `serde` - for serialization and deserialization
 - `sled` - for database
 - `bincode` - for binary serialization and deserialization
+
+## Changes
+
+- [x] Clipboard listener working alone
+- [x] Clipboard data saved to Sled database
+- [x] Clipboard history tracking integrated with Tauri
+- [x] Images are saved to app data directory
+- [x] Images are loaded from disk and displayed in the UI as `Recent images`. A huge performance improvement
+- [x] Database footprint reduced by using `bincode` for serialization and deserialization and keeping files in disk instead of in database file
