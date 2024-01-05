@@ -31,13 +31,22 @@ export default function CopyButton(props: CopyButtonProps) {
       }}
     >
       {props.children}
-      <span className="absolute top-0 left-0 flex items-center justify-center w-full h-full transition-all duration-300 group-hover:duration-100 group-hover:bg-black group-hover:bg-opacity-50 group-hover:backdrop-blur-md group-hover:backdrop-saturate-200 group-hover:transition-all">
+      <span
+        className={twMerge(
+          "absolute top-0 left-0 flex items-center justify-center w-full h-full transition-colors duration-300 group-hover:duration-100 group-hover:bg-black group-hover:bg-opacity-80 group-hover:transition-colors",
+          copied === "IDLE"
+            ? "bg-transparent"
+            : copied === "COPIED"
+            ? "bg-green-500 bg-opacity-80  "
+            : "bg-black bg-opacity-80  "
+        )}
+      >
         {copied === "IDLE" ? (
           <Copy className="duration-500 opacity-0 text-neutral-300 group-hover:duration-200 group-hover:opacity-100" />
         ) : copied === "COPIED" ? (
           <Check className="duration-500 opacity-0 text-neutral-300 group-hover:duration-200 group-hover:opacity-100" />
         ) : (
-          <Loader2 className="duration-500 opacity-0 text-neutral-300 group-hover:duration-200 group-hover:opacity-100 animate-spin" />
+          <Loader2 className="duration-500 opacity-100 text-neutral-300 group-hover:duration-200 group-hover:opacity-100 animate-spin" />
         )}
       </span>
     </button>

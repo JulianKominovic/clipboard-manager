@@ -81,6 +81,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
+        "maximizable": false,
         "title": "Clipboard manager",
         "width": 800
       }

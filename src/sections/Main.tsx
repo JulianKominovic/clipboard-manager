@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import ImageCard from "../components/ImageCard";
 import RecentItems from "./main/RecentItems";
-import {
-  ClipboardHistoryItem,
-  ClipboardHistoryItemWithImage,
-  getClipboardHistory,
-} from "../events";
+import { ClipboardHistoryItemWithImage, getClipboardHistory } from "../events";
 import { APP_DATA_DIR } from "../constants";
 import { getRelativeDate } from "../utils";
+// @ts-expect-error - no types
 import Highlight from "react-highlight";
+import { Separator } from "../components/Separator";
 
 console.log(APP_DATA_DIR);
 
@@ -71,10 +69,7 @@ export default function Main() {
         {[...grouppedByRelativeDate.entries()].map(([key, items]) => {
           return (
             <section key={key} className="my-6">
-              <header className="flex items-center gap-4 my-4 text-xs text-neutral-400">
-                <h2>{key}</h2>
-                <hr className="flex-grow border-neutral-300" />
-              </header>
+              <Separator>{key}</Separator>
               <ul className="flex flex-col gap-2">
                 {items.map((item) => {
                   if (
@@ -94,7 +89,7 @@ export default function Main() {
                   return (
                     <li
                       key={item.id}
-                      className="[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:pb-4 [&>pre]:overflow-auto"
+                      className="[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto"
                     >
                       <Highlight>{item.text}</Highlight>
                     </li>

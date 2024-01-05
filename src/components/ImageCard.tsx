@@ -23,7 +23,7 @@ export default function ImageCard({
         onError={() => setHide(true)}
         src={src}
         className={twMerge(
-          "object-cover w-auto h-full rounded-lg group-hover:scale-110 group-hover:transition-all group-hover:duration-200 duration-500 transition-transform",
+          "object-cover w-auto h-full rounded-lg group-hover:scale-150 group-hover:transition-all group-hover:duration-200 duration-500 transition-transform",
           className
         )}
       />

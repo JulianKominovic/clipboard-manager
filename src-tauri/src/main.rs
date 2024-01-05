@@ -12,6 +12,7 @@ use clipboard_manager::{
 };
 use clipboard_master::Master;
 use image::{DynamicImage, EncodableLayout, ImageBuffer};
+use tauri::WindowEvent;
 
 use crate::clipboard_manager::DATABASE_PATH;
 
@@ -89,6 +90,11 @@ fn main() {
                 let _ = Master::new(Handler).run();
             });
             Ok(())
+        })
+        .on_window_event(|e| {
+            if let WindowEvent::Resized(_) = e.event() {
+                std::thread::sleep(std::time::Duration::from_nanos(1));
+            }
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
