@@ -2,6 +2,7 @@ import { Copy, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ClipboardContentType, copyToClipboard } from "../events";
+import { toast } from "sonner";
 
 type CopyButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
   contentToCopy: string;
@@ -15,9 +16,14 @@ export default function CopyButton(props: CopyButtonProps) {
       {...props}
       className={twMerge("relative group", props.className)}
       onClick={() => {
+        if (copied !== "IDLE") return;
         setCopied("LOADING");
         copyToClipboard(props.contentType, props.contentToCopy).finally(() => {
           setCopied("COPIED");
+          toast("Copied image to clipboard", {
+            icon: <Check className="p-1 mr-2 rounded-full text-neutral-500" />,
+            important: true,
+          });
           setTimeout(() => {
             setCopied("IDLE");
           }, 1000);

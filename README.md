@@ -29,3 +29,4 @@ sudo apt-get install xorg-dev libxcb-shape0-dev libxcb-xfixes0-dev
 - [x] Images are saved to app data directory
 - [x] Images are loaded from disk and displayed in the UI as `Recent images`. A huge performance improvement
 - [x] Database footprint reduced by using `bincode` for serialization and deserialization and keeping files in disk instead of in database file
+- [x] Clipboard works with images. Now you can re-copy images from the clipboard history.
