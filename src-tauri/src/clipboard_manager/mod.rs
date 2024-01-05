@@ -1,7 +1,9 @@
+use active_win_pos_rs::get_active_window;
 use arboard::Clipboard;
 use chrono::{DateTime, Utc};
 use clipboard_master::{CallbackResult, ClipboardHandler};
 use core::hash::Hash;
+use freedesktop_icons::lookup;
 use homedir::get_my_home;
 use image::{DynamicImage, ImageBuffer};
 use once_cell::sync::Lazy;
@@ -51,6 +53,8 @@ pub struct ClipboardHistoryItem {
     pub content_type: ClipboardContentType,
     pub text: Option<String>,
     pub timestamp: String,
+    pub source_app: Option<String>,
+    pub source_app_icon: Option<String>,
     pub image_filename: Option<String>,
     pub image_binary: Option<Vec<u8>>,
     pub image_width: Option<u32>,
@@ -66,15 +70,19 @@ impl ClipboardHistoryItem {
         image_binary: Option<Vec<u8>>,
         image_width: Option<u32>,
         image_height: Option<u32>,
+        source_app: Option<String>,
+        source_app_icon: Option<String>,
     ) -> Self {
         Self {
             content_type,
             text,
+            source_app,
             image_filename,
             timestamp,
             image_binary,
             image_width,
             image_height,
+            source_app_icon,
         }
     }
 }
@@ -119,7 +127,26 @@ impl ClipboardHandler for Handler {
         let now = now.to_rfc3339();
         let database_path = DATABASE_PATH.lock().unwrap().clone();
         let mut lock = CLIPBOARD_INSTANCE.lock().unwrap();
-
+        let source_app = match get_active_window() {
+            Ok(active_window) => Some(active_window.app_name),
+            Err(()) => None,
+        };
+        let source_app_icon = if source_app.clone().is_some() {
+            let source_app = source_app.clone().unwrap().to_lowercase();
+            let icon = lookup(&source_app).with_cache().with_theme("Yaru").find();
+            if icon.is_some() {
+                Some(icon.unwrap().to_str().unwrap().to_string())
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        let source_app = if source_app.clone().is_some() {
+            Some(source_app.clone().unwrap().to_string().replace("-", " "))
+        } else {
+            None
+        };
         let image = lock.get_image();
 
         if image.is_ok() {
@@ -143,6 +170,8 @@ impl ClipboardHandler for Handler {
                 Some(imgbuf.as_bytes().to_vec()),
                 Some(image.width as u32),
                 Some(image.height as u32),
+                source_app,
+                source_app_icon,
             );
 
             let hash = push_clipboard_item_to_database(clipboard_item);
@@ -164,6 +193,8 @@ impl ClipboardHandler for Handler {
                 None,
                 None,
                 None,
+                source_app,
+                source_app_icon,
             );
 
             push_clipboard_item_to_database(clipboard_item);

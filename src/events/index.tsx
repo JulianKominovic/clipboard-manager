@@ -6,10 +6,13 @@ export type ClipboardHistoryItem = {
   text?: string;
   image_filename?: string;
   timestamp: string;
+  source_app?: string;
+  source_app_icon?: string;
 };
 export type ClipboardHistoryItemWithImage = ClipboardHistoryItem & {
   imageSrc?: string;
   id: string;
+  sourceAppIconSrc?: string;
 };
 export async function getClipboardHistory(): Promise<
   ClipboardHistoryItemWithImage[]
@@ -18,13 +21,20 @@ export async function getClipboardHistory(): Promise<
     "get_clipboard_history"
   );
   return clipboardHistoryItems.map(([key, item]) => {
+    const sourceAppIcon =
+      item.source_app_icon && convertFileSrc(item.source_app_icon);
     if (item.content_type === "Image") {
       const source = convertFileSrc(
         `${decodeURI(APP_DATA_DIR)}images/${item.image_filename}.png`
       );
-      return { ...item, id: key, imageSrc: source };
+      return {
+        ...item,
+        id: key,
+        imageSrc: source,
+        sourceAppIconSrc: sourceAppIcon,
+      };
     }
-    return { ...item, id: key };
+    return { ...item, id: key, sourceAppIconSrc: sourceAppIcon };
   });
 }
 

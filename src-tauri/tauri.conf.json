@@ -17,7 +17,11 @@
       "protocol": {
         "all": false,
         "asset": true,
-        "assetScope": ["$APPLOCALDATA/**"]
+        "assetScope": [
+          "$APPLOCALDATA/**",
+          "/usr/share/icons/**",
+          "/usr/share/pixmaps/**"
+        ]
       },
       "path": {
         "all": true

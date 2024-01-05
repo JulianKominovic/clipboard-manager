@@ -89,8 +89,30 @@ export default function Main() {
                   return (
                     <li
                       key={item.id}
-                      className="[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto"
+                      className="[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs"
                     >
+                      <header className="flex items-center gap-6 p-2 text-sm bg-neutral-100 text-muted-foreground">
+                        <span>
+                          {Intl.DateTimeFormat(undefined, {
+                            timeStyle: "short",
+                            dateStyle: "long",
+                          }).format(new Date(item.timestamp))}
+                        </span>
+                        <span>
+                          {item.sourceAppIconSrc && (
+                            <img
+                              src={item.sourceAppIconSrc}
+                              className="w-4 h-4 mr-2"
+                              alt={item.source_app}
+                            />
+                          )}
+                          {item.source_app}
+                        </span>
+                        <span>
+                          {item.text?.length}{" "}
+                          {item.text?.length === 1 ? "char" : "chars"}
+                        </span>
+                      </header>
                       <Highlight>{item.text}</Highlight>
                     </li>
                   );

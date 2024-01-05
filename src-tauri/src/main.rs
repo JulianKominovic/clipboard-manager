@@ -5,12 +5,14 @@ pub mod clipboard_manager;
 pub mod events;
 use std::{borrow::Cow, fs, io::Result, thread};
 
+use active_win_pos_rs::get_active_window;
 use arboard::{Error, ImageData};
 use clipboard_manager::{
     get_all_clipboard_items, get_clipboard_item, get_image_path_from_hash, ClipboardContentType,
     Handler,
 };
 use clipboard_master::Master;
+use freedesktop_icons::lookup;
 use image::{DynamicImage, EncodableLayout, ImageBuffer};
 use tauri::WindowEvent;
 
@@ -89,6 +91,7 @@ fn main() {
             thread::spawn(move || {
                 let _ = Master::new(Handler).run();
             });
+
             Ok(())
         })
         .on_window_event(|e| {
