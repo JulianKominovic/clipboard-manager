@@ -8,21 +8,13 @@ import { getRelativeDate } from "../utils";
 import Highlight from "react-highlight";
 import { Separator } from "../components/Separator";
 import GenericCardItem from "../components/GenericCardItem";
+import { useStore } from "../context";
 
 console.log(APP_DATA_DIR);
 
 export default function Main() {
-  const [clipboardHistory, setClipboardHistory] = useState<
-    ClipboardHistoryItemWithImage[]
-  >([]);
-  const { imagesItems, textItems } = useMemo(() => {
-    return {
-      imagesItems: clipboardHistory.filter(
-        (item) => item.imageSrc && item.content_type === "Image"
-      ),
-      textItems: clipboardHistory.filter((item) => item.text),
-    };
-  }, [clipboardHistory]);
+  const clipboardHistory = useStore((state) => state.clipboardHistoryItems);
+
   const grouppedByRelativeDate: Map<string, ClipboardHistoryItemWithImage[]> =
     useMemo(() => {
       const groups = new Map<string, ClipboardHistoryItemWithImage[]>();
@@ -41,17 +33,10 @@ export default function Main() {
           }
         });
       return groups;
-    }, [textItems]);
-
-  useEffect(() => {
-    getClipboardHistory().then((history) => {
-      setClipboardHistory(history);
-      console.log(history);
-    });
-  }, []);
+    }, [clipboardHistory]);
 
   return (
-    <div className="w-full h-full px-4 overflow-y-auto">
+    <div className="w-full h-full px-4 overflow-y-auto rounded-lg">
       {/* <RecentItems>
         {imagesItems
           .slice(0, 10)

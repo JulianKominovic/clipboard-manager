@@ -33,7 +33,7 @@ function TypeFilter() {
 ("use client");
 
 import * as React from "react";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, HomeIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
 import { cn } from "../@/lib/utils";
@@ -45,6 +45,8 @@ import {
   PopoverTrigger,
 } from "../@/components/ui/popover";
 import { Separator } from "../components/Separator";
+import { useStore } from "../context";
+import { ToggleGroup, ToggleGroupItem } from "../@/components/ui/toggle-group";
 const INTL_DATEPICKER_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",
   month: "2-digit",
@@ -115,14 +117,50 @@ function DatePickerWithRange({
   );
 }
 
+function AppListFilter() {
+  const appList = useStore((state) => state.availableFilters.byApp);
+
+  return (
+    <ToggleGroup type="single" className="flex flex-col items-start">
+      <ToggleGroupItem
+        className="flex items-center justify-start w-full gap-2"
+        value="ALL"
+        aria-label="Toggle bold"
+      >
+        <HomeIcon fill="#eee" className="w-5 h-5 p-0 m-0" />
+        All apps
+      </ToggleGroupItem>
+      {appList.map((app) => {
+        return (
+          <ToggleGroupItem
+            className="flex items-center justify-start w-full gap-2"
+            key={app.appName}
+            value={app.appName}
+          >
+            {app.appIconSrc && (
+              <img className="w-5 h-5" src={app.appIconSrc} alt={app.appName} />
+            )}
+            <p>{app.appName}</p>
+          </ToggleGroupItem>
+        );
+      })}
+    </ToggleGroup>
+  );
+}
+
+function Theme
+
 export default function Aside() {
   return (
-    <aside className="flex-shrink-0 h-full p-2 border-r border-neutral-200 w-80">
+    <aside className="flex-shrink-0 h-full p-2 pt-4 overflow-y-scroll bg-white border-r rounded-lg border-neutral-200 w-80">
+      <AppListFilter />
+      <Separator>Search filters</Separator>
       <SearchText />
-      <Separator>Content type</Separator>
       <TypeFilter />
-      <Separator>Date ranges</Separator>
       <DatePickerWithRange />
+      <Separator>Settings</Separator>
+
+      <Separator>Stats</Separator>
     </aside>
   );
 }

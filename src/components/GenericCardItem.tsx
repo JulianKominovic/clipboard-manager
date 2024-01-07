@@ -22,7 +22,7 @@ function Card({
   "source_app" | "timestamp" | "sourceAppIconSrc" | "text"
 >) {
   return (
-    <li className="[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-neutral-200 w-80 h-64">
+    <li className="[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-neutral-200 bg-white w-80 h-64">
       <header className="flex items-center gap-2 p-2 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-200">
         {sourceAppIconSrc && (
           <img src={sourceAppIconSrc} className="w-5 h-5" alt={source_app} />
