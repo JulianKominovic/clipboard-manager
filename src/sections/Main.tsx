@@ -7,6 +7,7 @@ import { getRelativeDate } from "../utils";
 // @ts-expect-error - no types
 import Highlight from "react-highlight";
 import { Separator } from "../components/Separator";
+import GenericCardItem from "../components/GenericCardItem";
 
 console.log(APP_DATA_DIR);
 
@@ -51,7 +52,7 @@ export default function Main() {
 
   return (
     <div className="w-full h-full px-4 overflow-y-auto">
-      <RecentItems>
+      {/* <RecentItems>
         {imagesItems
           .slice(0, 10)
           .sort((a, b) => b.id.localeCompare(a.id))
@@ -64,58 +65,15 @@ export default function Main() {
               />
             );
           })}
-      </RecentItems>
+      </RecentItems> */}
       <div>
         {[...grouppedByRelativeDate.entries()].map(([key, items]) => {
           return (
             <section key={key} className="my-6">
               <Separator>{key}</Separator>
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-wrap gap-2">
                 {items.map((item) => {
-                  if (
-                    item.content_type === "Image" &&
-                    item.imageSrc &&
-                    item.image_filename
-                  ) {
-                    return (
-                      <li key={item.id}>
-                        <ImageCard
-                          databaseId={item.id}
-                          src={item.imageSrc as string}
-                        />
-                      </li>
-                    );
-                  }
-                  return (
-                    <li
-                      key={item.id}
-                      className="[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs"
-                    >
-                      <header className="flex items-center gap-6 p-2 text-sm bg-neutral-100 text-muted-foreground">
-                        <span>
-                          {Intl.DateTimeFormat(undefined, {
-                            timeStyle: "short",
-                            dateStyle: "long",
-                          }).format(new Date(item.timestamp))}
-                        </span>
-                        <span>
-                          {item.sourceAppIconSrc && (
-                            <img
-                              src={item.sourceAppIconSrc}
-                              className="w-4 h-4 mr-2"
-                              alt={item.source_app}
-                            />
-                          )}
-                          {item.source_app}
-                        </span>
-                        <span>
-                          {item.text?.length}{" "}
-                          {item.text?.length === 1 ? "char" : "chars"}
-                        </span>
-                      </header>
-                      <Highlight>{item.text}</Highlight>
-                    </li>
-                  );
+                  return <GenericCardItem key={item.id} {...item} />;
                 })}
               </ul>
             </section>

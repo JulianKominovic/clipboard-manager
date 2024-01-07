@@ -4,6 +4,7 @@ use chrono::{DateTime, Utc};
 use clipboard_master::{CallbackResult, ClipboardHandler};
 use core::hash::Hash;
 use freedesktop_icons::lookup;
+use gnome_dbus_api::handlers::easy_gnome::apps::App;
 use homedir::get_my_home;
 use image::{DynamicImage, ImageBuffer};
 use once_cell::sync::Lazy;
@@ -128,12 +129,18 @@ impl ClipboardHandler for Handler {
         let database_path = DATABASE_PATH.lock().unwrap().clone();
         let mut lock = CLIPBOARD_INSTANCE.lock().unwrap();
         let source_app = match get_active_window() {
-            Ok(active_window) => Some(active_window.app_name),
+            Ok(active_window) => {
+                println!("Active window: {:?}", active_window);
+                match active_window.app_name.as_str().to_lowercase().as_str() {
+                    "code" => Some("vscode".to_string()),
+                    _ => Some(active_window.app_name),
+                }
+            }
             Err(()) => None,
         };
         let source_app_icon = if source_app.clone().is_some() {
             let source_app = source_app.clone().unwrap().to_lowercase();
-            let icon = lookup(&source_app).with_cache().with_theme("Yaru").find();
+            let icon = lookup(&source_app).with_theme("Yaru").find();
             if icon.is_some() {
                 Some(icon.unwrap().to_str().unwrap().to_string())
             } else {

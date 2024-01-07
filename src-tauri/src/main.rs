@@ -3,7 +3,12 @@
 
 pub mod clipboard_manager;
 pub mod events;
-use std::{borrow::Cow, fs, io::Result, thread};
+use std::{
+    borrow::{BorrowMut, Cow},
+    fs,
+    io::Result,
+    thread,
+};
 
 use active_win_pos_rs::get_active_window;
 use arboard::{Error, ImageData};
@@ -13,8 +18,9 @@ use clipboard_manager::{
 };
 use clipboard_master::Master;
 use freedesktop_icons::lookup;
+use gnome_dbus_api::handlers::easy_gnome::apps::{App, Apps};
 use image::{DynamicImage, EncodableLayout, ImageBuffer};
-use tauri::WindowEvent;
+use tauri::{Manager, WindowEvent};
 
 use crate::clipboard_manager::DATABASE_PATH;
 
@@ -76,6 +82,7 @@ async fn copy_to_clipboard(content_type: String, content: String) -> tauri::Resu
 
 fn main() {
     println!("Main function");
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_clipboard_history,
@@ -87,10 +94,11 @@ fn main() {
                 .lock()
                 .unwrap()
                 .push_str(appdir.to_str().unwrap());
-            println!("Clipboard thread spawned");
+            println!("Database path set");
             thread::spawn(move || {
                 let _ = Master::new(Handler).run();
             });
+            println!("Clipboard thread spawned");
 
             Ok(())
         })
