@@ -2,27 +2,16 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 pub mod clipboard_manager;
-pub mod events;
-use std::{
-    borrow::{BorrowMut, Cow},
-    fs,
-    io::Result,
-    thread,
-};
+use std::{borrow::Cow, thread};
 
-use active_win_pos_rs::get_active_window;
-use arboard::{Error, ImageData};
-use clipboard_manager::{
-    get_all_clipboard_items, get_clipboard_item, get_image_path_from_hash, ClipboardContentType,
-    Handler,
-};
+use arboard::ImageData;
+use clipboard_manager::Handler;
 use clipboard_master::Master;
-use freedesktop_icons::lookup;
-use gnome_dbus_api::handlers::easy_gnome::apps::{App, Apps};
-use image::{DynamicImage, EncodableLayout, ImageBuffer};
-use tauri::{Manager, WindowEvent};
+use tauri::WindowEvent;
 
-use crate::clipboard_manager::DATABASE_PATH;
+use crate::clipboard_manager::{
+    get_all_clipboard_items, get_clipboard_item, get_image_path_from_hash, DATABASE_PATH,
+};
 
 /*
 

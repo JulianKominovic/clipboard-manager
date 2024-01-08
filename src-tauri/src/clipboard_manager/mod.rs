@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 use clipboard_master::{CallbackResult, ClipboardHandler};
 use core::hash::Hash;
 use freedesktop_icons::lookup;
-use gnome_dbus_api::handlers::easy_gnome::apps::App;
 use homedir::get_my_home;
 use image::{DynamicImage, ImageBuffer};
 use once_cell::sync::Lazy;

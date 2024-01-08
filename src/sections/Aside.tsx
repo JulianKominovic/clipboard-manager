@@ -2,6 +2,7 @@ import { Checkbox } from "../@/components/ui/checkbox";
 import { Input } from "../@/components/ui/input";
 import { getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/api/shell";
+import icon from "../assets/Icon.png";
 const appVersion = await getVersion();
 
 function SearchText() {
@@ -89,6 +90,9 @@ function DatePickerWithRange({
     filters: state.filters,
   }));
   const date = filters.byDate;
+  const from = date?.from && new Date(date?.from);
+  const to = date?.to && new Date(date?.to);
+  console.log(date);
   return (
     <div className={cn("grid gap-2 w-full mb-4", className)}>
       <Popover>
@@ -102,24 +106,24 @@ function DatePickerWithRange({
             )}
           >
             <CalendarIcon className="w-4 h-4 mr-2" />
-            {date?.from ? (
-              date.to ? (
+            {from ? (
+              to ? (
                 <>
                   {Intl.DateTimeFormat(
                     undefined,
                     INTL_DATEPICKER_FORMAT_OPTIONS
-                  ).format(date.from)}{" "}
+                  ).format(from)}{" "}
                   -{" "}
                   {Intl.DateTimeFormat(
                     undefined,
                     INTL_DATEPICKER_FORMAT_OPTIONS
-                  ).format(date.to)}
+                  ).format(to)}
                 </>
               ) : (
                 Intl.DateTimeFormat(
                   undefined,
                   INTL_DATEPICKER_FORMAT_OPTIONS
-                ).format(date.from)
+                ).format(from)
               )
             ) : (
               <span>Pick a date</span>
@@ -282,7 +286,16 @@ function Footer() {
 
 export default function Aside() {
   return (
-    <aside className="flex-shrink-0 h-full p-2 pl-1 overflow-x-hidden overflow-y-scroll bg-white border-r rounded-lg border-neutral-200 w-80">
+    <aside className="flex-shrink-0 h-full p-2 pl-1 pr-4 overflow-x-hidden overflow-y-scroll bg-white border-r rounded-lg border-neutral-200 w-80">
+      <div className="flex flex-col items-center mb-8">
+        <img src={icon} width={256} height={256} className="mx-auto" />
+        <h1 className="text-2xl font-semibold text-center text-foreground">
+          Clippy
+        </h1>
+        <h2 className="text-center text-muted-foreground">
+          Another offline, cool looking, comfortable, clipboard manager.
+        </h2>
+      </div>
       <AppListFilter />
       <Separator>Search filters</Separator>
       <SearchText />
