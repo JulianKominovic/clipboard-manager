@@ -1,6 +1,7 @@
 import { Checkbox } from "../@/components/ui/checkbox";
 import { Input } from "../@/components/ui/input";
 import { getVersion } from "@tauri-apps/api/app";
+import { open } from "@tauri-apps/api/shell";
 const appVersion = await getVersion();
 
 function SearchText() {
@@ -67,7 +68,14 @@ import { useStore } from "../context";
 import { ToggleGroup, ToggleGroupItem } from "../@/components/ui/toggle-group";
 import { Label } from "../@/components/ui/label";
 import { Switch } from "../@/components/ui/switch";
-import { APP_DATA_DIR } from "../constants";
+import {
+  APP_DATA_DIR,
+  KERNEL_ARCH,
+  KERNEL_LOCALE,
+  KERNEL_PLATFORM,
+  KERNEL_TYPE,
+  KERNEL_VERSION,
+} from "../constants";
 const INTL_DATEPICKER_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",
   month: "2-digit",
@@ -244,7 +252,7 @@ function PreserveWhitespace() {
 
 function StatItem({ title, value }: { title: string; value: string }) {
   return (
-    <div className="w-full mb-2 overflow-hidden text-sm">
+    <div className="w-full mb-4 overflow-hidden text-sm">
       <p>{title}</p>
       <p
         className="break-normal whitespace-pre-wrap text-muted-foreground"
@@ -258,9 +266,16 @@ function StatItem({ title, value }: { title: string; value: string }) {
 
 function Footer() {
   return (
-    <footer className="flex items-center gap-2 mt-12 text-xs text-muted-foreground">
-      <Github className="w-4 h-4 text-foreground" />
-      Clipboard manager by Julian Kominovic
+    <footer className="mt-12 text-xs text-muted-foreground">
+      <button
+        className="flex items-end gap-2 leading-4 hover:text-foreground"
+        onClick={() =>
+          open("https://github.com/JulianKominovic/clipboard-manager")
+        }
+      >
+        <Github className="w-4 h-4" />
+        Clipboard manager by Julian Kominovic
+      </button>
     </footer>
   );
 }
@@ -278,6 +293,11 @@ export default function Aside() {
       <Separator>Stats</Separator>
       <StatItem title="Version" value={appVersion} />
       <StatItem title="Database path" value={APP_DATA_DIR} />
+      <StatItem title="Platform" value={KERNEL_TYPE} />
+      <StatItem title="OS Arch" value={KERNEL_ARCH} />
+      <StatItem title="OS Version" value={KERNEL_VERSION} />
+      {KERNEL_LOCALE && <StatItem title="OS Locale" value={KERNEL_LOCALE} />}
+
       <Footer />
     </aside>
   );
