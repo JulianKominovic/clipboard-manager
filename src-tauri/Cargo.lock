@@ -94,33 +94,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 
 [[package]]
-name = "app"
-version = "0.1.0"
-dependencies = [
- "active-win-pos-rs",
- "arboard",
- "base64 0.21.5",
- "bincode",
- "chrono",
- "clipboard-master",
- "freedesktop-icons",
- "gnome-dbus-api",
- "homedir",
- "image",
- "once_cell",
- "rayon",
- "serde",
- "serde_json",
- "sled",
- "specta",
- "tauri",
- "tauri-build",
- "tauri-specta",
- "tokio",
- "uuid",
-]
-
-[[package]]
 name = "appkit-nsworkspace-bindings"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -662,6 +635,33 @@ dependencies = [
  "error-code",
  "str-buf",
  "winapi",
+]
+
+[[package]]
+name = "clippis"
+version = "0.1.0"
+dependencies = [
+ "active-win-pos-rs",
+ "arboard",
+ "base64 0.21.5",
+ "bincode",
+ "chrono",
+ "clipboard-master",
+ "freedesktop-icons",
+ "gnome-dbus-api",
+ "homedir",
+ "image",
+ "once_cell",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sled",
+ "specta",
+ "tauri",
+ "tauri-build",
+ "tauri-specta",
+ "tokio",
+ "uuid",
 ]
 
 [[package]]

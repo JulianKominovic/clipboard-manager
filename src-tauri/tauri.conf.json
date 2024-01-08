@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Clipboard manager",
+    "productName": "Clippis",
     "version": "0.1.0"
   },
   "tauri": {
@@ -101,8 +101,8 @@
         "height": 600,
         "resizable": true,
         "maximizable": false,
-        "title": "Clipboard manager",
-        "width": 800
+        "title": "Clippis",
+        "width": 900
       }
     ]
   }

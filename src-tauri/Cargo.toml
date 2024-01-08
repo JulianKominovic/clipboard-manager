@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "clippis"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Another offline, cool looking, comfortable, clipboard manager."
+authors = ["Julian Kominovic"]
 license = ""
-repository = ""
-default-run = "app"
+repository = "https://github.com/JulianKominovic/clipboard-manager"
+default-run = "clippis"
 edition = "2021"
 rust-version = "1.60"
 
