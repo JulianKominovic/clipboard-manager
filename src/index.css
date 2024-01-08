@@ -51,6 +51,8 @@
 
 @layer base {
   * {
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
     @apply border-border;
   }
   body {

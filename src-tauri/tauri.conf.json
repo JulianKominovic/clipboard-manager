@@ -26,6 +26,11 @@
       "path": {
         "all": true
       },
+      "app": {
+        "all": true,
+        "hide": true,
+        "show": true
+      },
       "fs": {
         "all": false,
         "copyFile": false,

@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import ImageCard from "../components/ImageCard";
-import RecentItems from "./main/RecentItems";
-import { ClipboardHistoryItemWithImage, getClipboardHistory } from "../events";
+import { useDeferredValue, useMemo } from "react";
+import { ClipboardHistoryItemWithImage } from "../events";
 import { APP_DATA_DIR } from "../constants";
 import { getRelativeDate } from "../utils";
 // @ts-expect-error - no types
@@ -13,8 +11,9 @@ import { useStore } from "../context";
 console.log(APP_DATA_DIR);
 
 export default function Main() {
-  const clipboardHistory = useStore((state) => state.clipboardHistoryItems);
-
+  const _clipboardHistory = useStore((state) => state.clipboardHistoryItems);
+  const clipboardHistory = useDeferredValue(_clipboardHistory);
+  console.log(_clipboardHistory);
   const grouppedByRelativeDate: Map<string, ClipboardHistoryItemWithImage[]> =
     useMemo(() => {
       const groups = new Map<string, ClipboardHistoryItemWithImage[]>();

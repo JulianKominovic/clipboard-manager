@@ -1,15 +1,21 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { ClipboardHistoryItemWithImage } from "./events";
+import { app } from "@tauri-apps/api";
 
 type Context = {
   filters: {
-    byApp: string;
-    byDate: string;
-    byType: string;
-    byText: string;
+    byApp?: string;
+    byDate?: {
+      from: Date | undefined;
+      to: Date | undefined;
+    };
+    byType?: string;
+    byText?: string;
   };
   settings: {
     theme: "light" | "dark";
+    preserveWhitespace: boolean;
   };
   setSettings: (settings: Partial<Context["settings"]>) => void;
   availableFilters: {
@@ -18,61 +24,101 @@ type Context = {
   setFilters: (filters: Partial<Context["filters"]>) => void;
   clipboardHistoryItems: ClipboardHistoryItemWithImage[];
   setClipboardHistoryItems: (items: ClipboardHistoryItemWithImage[]) => void;
+  _pristineClipboardHistoryItems: ClipboardHistoryItemWithImage[];
 };
 
-export const useStore = create<Context>((set) => ({
-  filters: {
-    byApp: "",
-    byDate: "",
-    byType: "",
-    byText: "",
-  },
-  setFilters: (filters) => {
-    set((state) => ({
-      filters: {
-        ...state.filters,
-        ...filters,
-      },
-      clipboardHistoryItems: state.clipboardHistoryItems.filter((item) => {
-        if (filters.byApp && item.source_app !== filters.byApp) return false;
-        if (filters.byDate && item.timestamp !== filters.byDate) return false;
-        if (filters.byType && item.content_type !== filters.byType)
-          return false;
-        if (filters.byText && item.text && !item.text.includes(filters.byText))
-          return false;
-        return true;
-      }),
-    }));
-  },
-  settings: {
-    theme: "dark",
-  },
-  setSettings: (settings) => {
-    set((state) => ({
-      settings: {
-        ...state.settings,
-        ...settings,
-      },
-    }));
-  },
+function applyFilters(
+  items: ClipboardHistoryItemWithImage[],
+  filters: Context["filters"]
+) {
+  return items.filter((item) => {
+    const sameAppName = filters.byApp && item.source_app === filters.byApp;
+    const textMatch =
+      filters.byText &&
+      item.text &&
+      item.content_type === "Text" &&
+      item.text
+        .toLocaleLowerCase()
+        .includes(filters.byText.toLocaleLowerCase());
+    const typeMatch = filters.byType && item.content_type === filters.byType;
+    const itemTimestamp = new Date(item.timestamp);
 
-  availableFilters: {
-    byApp: [],
-  },
-  clipboardHistoryItems: [],
-  setClipboardHistoryItems: (items) =>
-    set(() => ({
-      clipboardHistoryItems: items,
-      availableFilters: {
-        byApp: [...new Set(items.map((item) => item.source_app))]
-          .filter((e) => e)
-          .map((appName) => {
-            const item = items.find((item) => item.source_app === appName);
-            return {
-              appName: appName as string,
-              appIconSrc: item?.sourceAppIconSrc,
-            };
-          }),
+    const dateMatch =
+      filters.byDate &&
+      itemTimestamp.getTime() >= filters.byDate.from?.getTime()! &&
+      itemTimestamp.getTime() <= filters.byDate.to?.getTime()!;
+    return (
+      (!filters.byApp || sameAppName) &&
+      (!filters.byText || textMatch) &&
+      (!filters.byType || typeMatch) &&
+      (!filters.byDate || dateMatch)
+    );
+  });
+}
+
+export const useStore = create(
+  persist<Context>(
+    (set) => ({
+      filters: {
+        byApp: undefined,
+        byDate: undefined,
+        byType: undefined,
+        byText: undefined,
       },
-    })),
-}));
+      setFilters: (filters) => {
+        set((state) => {
+          const newFilters = {
+            ...state.filters,
+            ...filters,
+          };
+          return {
+            filters: newFilters,
+            clipboardHistoryItems: applyFilters(
+              state._pristineClipboardHistoryItems,
+              newFilters
+            ),
+          };
+        });
+      },
+      settings: {
+        theme: "dark",
+      },
+      setSettings: (settings) => {
+        set((state) => ({
+          settings: {
+            ...state.settings,
+            ...settings,
+          },
+        }));
+      },
+
+      availableFilters: {
+        byApp: [],
+      },
+      /**
+       * Internal state to keep track of the original clipboard history items without filters
+       */
+      _pristineClipboardHistoryItems: [],
+      clipboardHistoryItems: [],
+      setClipboardHistoryItems: (items) =>
+        set((state) => ({
+          _pristineClipboardHistoryItems: items,
+          clipboardHistoryItems: applyFilters(items, state.filters),
+          availableFilters: {
+            byApp: [...new Set(items.map((item) => item.source_app))]
+              .filter((e) => e)
+              .map((appName) => {
+                const item = items.find((item) => item.source_app === appName);
+                return {
+                  appName: appName as string,
+                  appIconSrc: item?.sourceAppIconSrc,
+                };
+              }),
+          },
+        })),
+    }),
+    {
+      name: "context",
+    }
+  )
+);
