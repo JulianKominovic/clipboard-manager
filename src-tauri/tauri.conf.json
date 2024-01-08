@@ -26,6 +26,16 @@
       "path": {
         "all": true
       },
+      "os": {
+        "all": true
+      },
+      "shell": {
+        "all": false,
+        "execute": false,
+        "open": true,
+        "scope": [],
+        "sidecar": false
+      },
       "app": {
         "all": true,
         "hide": true,

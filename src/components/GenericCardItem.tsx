@@ -31,7 +31,7 @@ function Card({
         settings.preserveWhitespace ? "" : "[&>pre]:whitespace-normal"
       )}
     >
-      <header className="flex items-center gap-2 p-2 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-200">
+      <header className="flex items-center gap-2 p-2 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-100">
         {sourceAppIconSrc && (
           <img src={sourceAppIconSrc} className="w-5 h-5" alt={source_app} />
         )}

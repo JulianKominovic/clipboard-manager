@@ -82,6 +82,7 @@ export const useStore = create(
       },
       settings: {
         theme: "dark",
+        preserveWhitespace: false,
       },
       setSettings: (settings) => {
         set((state) => ({
