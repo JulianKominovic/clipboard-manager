@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { APP_DATA_DIR } from "../constants";
 export type ClipboardHistoryItem = {
-  content_type: "Image" | "Text";
+  content_type: ClipboardContentType;
   text?: string;
   image_filename?: string;
   timestamp: string;

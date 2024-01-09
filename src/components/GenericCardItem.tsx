@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { useStore } from "../context";
 import { Button } from "../@/components/ui/button";
 import CopyButton from "./CopyButton";
+import { Bold, Code, Code2, Image, LucideTextCursor, Text } from "lucide-react";
 
 type Props = ClipboardHistoryItemWithImage;
 
@@ -24,6 +25,7 @@ function Card({
   text,
   imageSrc,
   image_filename,
+  content_type,
 }: { children: React.ReactNode } & Pick<
   Props,
   | "source_app"
@@ -32,16 +34,17 @@ function Card({
   | "text"
   | "imageSrc"
   | "image_filename"
+  | "content_type"
 >) {
   const settings = useStore((state) => state.settings);
   return (
     <li
       className={twMerge(
-        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-neutral-200 bg-white w-80 h-64",
+        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:h-auto [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-neutral-200 bg-white w-80 h-64 flex flex-col justify-between",
         settings.preserveWhitespace ? "" : "[&>pre]:whitespace-normal"
       )}
     >
-      <header className="flex items-center gap-2 px-2 py-1 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-100">
+      <header className="flex items-center gap-2 px-2 py-1 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-200">
         {sourceAppIconSrc && (
           <img src={sourceAppIconSrc} className="w-5 h-5" alt={source_app} />
         )}
@@ -64,6 +67,16 @@ function Card({
         />
       </header>
       {children}
+      <footer className="flex items-center flex-shrink-0 gap-2 px-4 text-xs h-7 bg-neutral-100 text-muted-foreground border-neutral-200">
+        {content_type === ClipboardContentType.Html ? (
+          <Code2 className="w-4 h-4" />
+        ) : content_type === ClipboardContentType.Image ? (
+          <Image className="w-4 h-4" />
+        ) : (
+          <Bold className="w-4 h-4" />
+        )}
+        {content_type}
+      </footer>
     </li>
   );
 }
@@ -76,6 +89,7 @@ function GenericCardItem({
   source_app,
   text,
   image_filename,
+  content_type,
 }: Props) {
   return (
     <Card
@@ -86,6 +100,7 @@ function GenericCardItem({
       text={text}
       imageSrc={imageSrc}
       image_filename={image_filename}
+      content_type={content_type}
     >
       <Content imageSrc={imageSrc} text={text} />
     </Card>
