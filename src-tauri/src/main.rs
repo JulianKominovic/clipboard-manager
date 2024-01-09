@@ -71,7 +71,7 @@ async fn copy_to_clipboard(content_type: String, content: String) -> tauri::Resu
 
 fn main() {
     println!("Main function");
-
+    println!("{:?}", freedesktop_icons::list_themes());
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_clipboard_history,

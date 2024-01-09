@@ -18,6 +18,7 @@ use std::{
     sync::{Arc, Mutex},
     time::SystemTime,
 };
+pub mod helpers;
 pub static HOME_PATH: Lazy<String> = Lazy::new(|| {
     let home = get_my_home().unwrap();
     let string_home = home.unwrap().to_str().unwrap().to_string();
@@ -103,6 +104,10 @@ fn push_clipboard_item_to_database(mut clipboard_item: ClipboardHistoryItem) -> 
     clipboard_item.hash(&mut hasher);
     let hash = hasher.finish();
     let hash = hash.to_string();
+    if DATABASE_INSTANCE.contains_key(hash.clone()).unwrap() {
+        println!("Hash already exists: {}, not saving", hash);
+        return hash;
+    }
 
     clipboard_item.image_binary = None;
     clipboard_item.image_filename = Some(hash.clone());
@@ -127,21 +132,20 @@ impl ClipboardHandler for Handler {
         let now = now.to_rfc3339();
         let database_path = DATABASE_PATH.lock().unwrap().clone();
         let mut lock = CLIPBOARD_INSTANCE.lock().unwrap();
-        let source_app = match get_active_window() {
+        let (source_app, process_id) = match get_active_window() {
             Ok(active_window) => {
                 println!("Active window: {:?}", active_window);
-                match active_window.app_name.as_str().to_lowercase().as_str() {
-                    "code" => Some("vscode".to_string()),
-                    _ => Some(active_window.app_name),
-                }
+                let source_app = active_window.app_name;
+                let process_id = active_window.process_id;
+                (Some(source_app), Some(process_id))
             }
-            Err(()) => None,
+            Err(()) => (None, None),
         };
-        let source_app_icon = if source_app.clone().is_some() {
-            let source_app = source_app.clone().unwrap().to_lowercase();
-            let icon = lookup(&source_app).with_theme("Yaru").find();
+        let source_app_icon = if source_app.clone().is_some() && process_id.clone().is_some() {
+            let source_app = source_app.clone().unwrap();
+            let icon = helpers::find_icon(&source_app, process_id.unwrap());
             if icon.is_some() {
-                Some(icon.unwrap().to_str().unwrap().to_string())
+                Some(icon.unwrap().to_string())
             } else {
                 None
             }
@@ -149,7 +153,14 @@ impl ClipboardHandler for Handler {
             None
         };
         let source_app = if source_app.clone().is_some() {
-            Some(source_app.clone().unwrap().to_string().replace("-", " "))
+            Some(
+                source_app
+                    .clone()
+                    .unwrap()
+                    .to_string()
+                    .replace("-", " ")
+                    .replace(".", " "),
+            )
         } else {
             None
         };
