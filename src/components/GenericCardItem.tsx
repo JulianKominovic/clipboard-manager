@@ -1,6 +1,5 @@
 import React from "react";
 import { ClipboardHistoryItemWithImage } from "../events";
-import Highlight from "react-highlight";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "../context";
 
@@ -20,8 +19,8 @@ function Card({
   source_app,
   timestamp,
   sourceAppIconSrc,
-  text,
-}: { children: React.ReactNode } & Pick<
+}: // text,
+{ children: React.ReactNode } & Pick<
   Props,
   "source_app" | "timestamp" | "sourceAppIconSrc" | "text"
 >) {
@@ -54,14 +53,14 @@ function Card({
 }
 
 function GenericCardItem({
-  content_type,
   id,
   timestamp,
   imageSrc,
-  image_filename,
+  // content_type,
+  // image_filename,
+  // source_app_icon,
   sourceAppIconSrc,
   source_app,
-  source_app_icon,
   text,
 }: Props) {
   return (

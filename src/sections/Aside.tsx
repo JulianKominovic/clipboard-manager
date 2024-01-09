@@ -1,4 +1,4 @@
-import { Checkbox } from "../@/components/ui/checkbox";
+// import { Checkbox } from "../@/components/ui/checkbox";
 import { Input } from "../@/components/ui/input";
 import { getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/api/shell";
@@ -22,39 +22,38 @@ function SearchText() {
     </div>
   );
 }
-const TYPES = ["Image", "Text"];
-function TypeFilter() {
-  const setFilters = useStore((state) => state.setFilters);
-  return TYPES.map((type) => {
-    return (
-      <div key={type} className="flex mt-4 mb-4 space-x-2 items-top">
-        <Checkbox
-          id={type}
-          onCheckedChange={(value) => {
-            if (type === "Image") setFilters({ byType: "image" });
-            if (type === "Text") setFilters({ byType: "text" });
-          }}
-        />
-        <div className="grid gap-1.5 leading-none">
-          <label
-            htmlFor={type}
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {type}
-          </label>
-          {/* <p className="text-sm text-muted-foreground">
-            You agree to our Terms of Service and Privacy Policy.
-          </p> */}
-        </div>
-      </div>
-    );
-  });
-}
-("use client");
+// const TYPES = ["Image", "Text"];
+// function TypeFilter() {
+//   const setFilters = useStore((state) => state.setFilters);
+//   return TYPES.map((type) => {
+//     return (
+//       <div key={type} className="flex mt-4 mb-4 space-x-2 items-top">
+//         <Checkbox
+//           id={type}
+//           onCheckedChange={(value) => {
+//             if (type === "Image") setFilters({ byType: "image" });
+//             if (type === "Text") setFilters({ byType: "text" });
+//           }}
+//         />
+//         <div className="grid gap-1.5 leading-none">
+//           <label
+//             htmlFor={type}
+//             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+//           >
+//             {type}
+//           </label>
+//           {/* <p className="text-sm text-muted-foreground">
+//             You agree to our Terms of Service and Privacy Policy.
+//           </p> */}
+//         </div>
+//       </div>
+//     );
+//   });
+// }
 
 import * as React from "react";
 import { Calendar as CalendarIcon, Github, HomeIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
+// import { DateRange } from "react-day-picker";
 
 import { cn } from "../@/lib/utils";
 import { Button } from "../@/components/ui/button";
@@ -73,7 +72,6 @@ import {
   APP_DATA_DIR,
   KERNEL_ARCH,
   KERNEL_LOCALE,
-  KERNEL_PLATFORM,
   KERNEL_TYPE,
   KERNEL_VERSION,
 } from "../constants";

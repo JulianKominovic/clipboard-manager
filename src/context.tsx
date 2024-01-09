@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ClipboardHistoryItemWithImage } from "./events";
-import { app } from "@tauri-apps/api";
 
 type Context = {
   filters: {

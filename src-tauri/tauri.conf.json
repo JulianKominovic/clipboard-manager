@@ -72,7 +72,7 @@
         "icons/icon.ico"
       ],
       "identifier": "com.jkominovic.clipboardmanager",
-      "longDescription": "",
+      "longDescription": "Another offline, cool looking, comfortable, clipboard manager. Built with Tauri for Linux(gnome)",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
@@ -81,8 +81,8 @@
         "signingIdentity": null
       },
       "resources": [],
-      "shortDescription": "",
-      "targets": "all",
+      "shortDescription": "A clipboard manager for Linux(gnome)",
+      "targets": ["deb"],
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
