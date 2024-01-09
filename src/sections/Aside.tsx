@@ -284,7 +284,7 @@ function Footer() {
 
 export default function Aside() {
   return (
-    <aside className="flex-shrink-0 h-full p-2 pl-1 pr-4 overflow-x-hidden overflow-y-scroll bg-white border-r rounded-lg border-neutral-200 w-80">
+    <aside className="flex-shrink-0 h-full p-2 pl-1 pr-4 overflow-x-hidden overflow-y-scroll bg-white border-r border-neutral-200 w-80">
       <div className="flex flex-col items-center mb-8">
         <img src={icon} width={256} height={256} className="mx-auto" />
         <h1 className="text-2xl font-semibold text-center text-foreground">

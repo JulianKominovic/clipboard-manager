@@ -56,6 +56,7 @@ pub struct ClipboardHistoryItem {
     pub timestamp: String,
     pub source_app: Option<String>,
     pub source_app_icon: Option<String>,
+    pub source_app_window: Option<String>,
     pub image_filename: Option<String>,
     pub image_binary: Option<Vec<u8>>,
     pub image_width: Option<u32>,
@@ -73,6 +74,7 @@ impl ClipboardHistoryItem {
         image_height: Option<u32>,
         source_app: Option<String>,
         source_app_icon: Option<String>,
+        source_app_window: Option<String>,
     ) -> Self {
         Self {
             content_type,
@@ -84,6 +86,7 @@ impl ClipboardHistoryItem {
             image_width,
             image_height,
             source_app_icon,
+            source_app_window,
         }
     }
 }
@@ -129,14 +132,15 @@ impl ClipboardHandler for Handler {
     fn on_clipboard_change(&mut self) -> CallbackResult {
         println!("Clipboard changed!");
         thread::spawn(|| {
-            let (source_app, process_id) = match get_active_window() {
+            let (source_app, process_id, source_app_window) = match get_active_window() {
                 Ok(active_window) => {
                     println!("Active window: {:?}", active_window);
                     let source_app = active_window.app_name;
                     let process_id = active_window.process_id;
-                    (Some(source_app), Some(process_id))
+                    let source_app_window = active_window.title;
+                    (Some(source_app), Some(process_id), Some(source_app_window))
                 }
-                Err(()) => (None, None),
+                Err(()) => (None, None, None),
             };
             let now = SystemTime::now();
             let now: DateTime<Utc> = now.into();
@@ -197,6 +201,7 @@ impl ClipboardHandler for Handler {
                     Some(image.height as u32),
                     source_app.clone(),
                     source_app_icon.clone(),
+                    source_app_window.clone(),
                 );
 
                 let hash = push_clipboard_item_to_database(clipboard_item);
@@ -218,6 +223,7 @@ impl ClipboardHandler for Handler {
                         None,
                         source_app.clone(),
                         source_app_icon.clone(),
+                        source_app_window.clone(),
                     );
 
                     push_clipboard_item_to_database(clipboard_item);
@@ -236,6 +242,7 @@ impl ClipboardHandler for Handler {
                     None,
                     source_app,
                     source_app_icon,
+                    source_app_window,
                 );
 
                 push_clipboard_item_to_database(clipboard_item);

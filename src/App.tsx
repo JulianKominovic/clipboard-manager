@@ -26,7 +26,7 @@ function App() {
   }, []);
   return (
     <>
-      <main className="flex w-full h-full p-4 overflow-x-hidden">
+      <main className="flex w-full h-full p-4 pr-1 overflow-x-hidden">
         <Aside />
         <Main />
       </main>

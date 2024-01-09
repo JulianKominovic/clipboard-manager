@@ -8,6 +8,7 @@ export type ClipboardHistoryItem = {
   timestamp: string;
   source_app?: string;
   source_app_icon?: string;
+  source_app_window?: string;
 };
 export type ClipboardHistoryItemWithImage = ClipboardHistoryItem & {
   imageSrc?: string;

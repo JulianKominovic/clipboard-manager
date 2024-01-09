@@ -36,20 +36,6 @@ export default function Main() {
 
   return (
     <div className="w-full h-full px-4 overflow-y-auto rounded-lg">
-      {/* <RecentItems>
-        {imagesItems
-          .slice(0, 10)
-          .sort((a, b) => b.id.localeCompare(a.id))
-          .map((item, index) => {
-            return (
-              <ImageCard
-                databaseId={item.id}
-                src={item.imageSrc as string}
-                key={index}
-              />
-            );
-          })}
-      </RecentItems> */}
       <div>
         {[...grouppedByRelativeDate.entries()].map(([key, items]) => {
           return (

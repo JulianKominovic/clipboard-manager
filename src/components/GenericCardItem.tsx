@@ -4,7 +4,15 @@ import { twMerge } from "tailwind-merge";
 import { useStore } from "../context";
 import { Button } from "../@/components/ui/button";
 import CopyButton from "./CopyButton";
-import { Bold, Code, Code2, Image, LucideTextCursor, Text } from "lucide-react";
+import {
+  Bold,
+  Code,
+  Code2,
+  Dot,
+  Image,
+  LucideTextCursor,
+  Text,
+} from "lucide-react";
 
 type Props = ClipboardHistoryItemWithImage;
 
@@ -26,6 +34,7 @@ function Card({
   imageSrc,
   image_filename,
   content_type,
+  source_app_window,
 }: { children: React.ReactNode } & Pick<
   Props,
   | "source_app"
@@ -35,6 +44,7 @@ function Card({
   | "imageSrc"
   | "image_filename"
   | "content_type"
+  | "source_app_window"
 >) {
   const settings = useStore((state) => state.settings);
   return (
@@ -67,7 +77,7 @@ function Card({
         />
       </header>
       {children}
-      <footer className="flex items-center flex-shrink-0 gap-2 px-4 text-xs h-7 bg-neutral-100 text-muted-foreground border-neutral-200">
+      <footer className="flex items-center flex-shrink-0 gap-1 px-4 text-xs h-7 bg-neutral-100 text-muted-foreground border-neutral-200">
         {content_type === ClipboardContentType.Html ? (
           <Code2 className="w-4 h-4" />
         ) : content_type === ClipboardContentType.Image ? (
@@ -76,6 +86,8 @@ function Card({
           <Bold className="w-4 h-4" />
         )}
         {content_type}
+        <Dot className="flex-shrink-0" strokeWidth={3} />
+        <span className="truncate"> {source_app_window}</span>
       </footer>
     </li>
   );
@@ -90,6 +102,7 @@ function GenericCardItem({
   text,
   image_filename,
   content_type,
+  source_app_window,
 }: Props) {
   return (
     <Card
@@ -101,6 +114,7 @@ function GenericCardItem({
       imageSrc={imageSrc}
       image_filename={image_filename}
       content_type={content_type}
+      source_app_window={source_app_window}
     >
       <Content imageSrc={imageSrc} text={text} />
     </Card>
