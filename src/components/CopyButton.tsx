@@ -37,19 +37,18 @@ export default function CopyButton(props: CopyButtonProps) {
             icon: <Check className="p-1 mr-2 rounded-full text-neutral-500" />,
             important: true,
           });
-          setTimeout(() => {
-            setCopied("IDLE");
-          }, 2000);
         } catch (err) {
           console.error(err);
           setCopied("FAIL");
-          setTimeout(() => {
-            setCopied("FAIL");
-          }, 2000);
+
           toast("Failed to copy", {
             icon: <Check className="p-1 mr-2 rounded-full text-neutral-500" />,
             important: true,
           });
+        } finally {
+          setTimeout(() => {
+            setCopied("IDLE");
+          }, 2000);
         }
       }}
     >

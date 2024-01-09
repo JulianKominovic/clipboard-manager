@@ -58,11 +58,9 @@ function Card({
         <CopyButton
           className="ml-auto"
           contentType={
-            image_filename
-              ? ClipboardContentType.Image
-              : ClipboardContentType.Text
+            imageSrc ? ClipboardContentType.Image : ClipboardContentType.Text
           }
-          contentToCopy={(image_filename ? image_filename : text) as string}
+          contentToCopy={(imageSrc ? image_filename : text) as string}
         />
       </header>
       {children}

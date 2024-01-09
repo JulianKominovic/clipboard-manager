@@ -40,13 +40,12 @@ async fn get_clipboard_history(
 }
 
 #[tauri::command]
-async fn copy_image_to_clipboard(image_database_id: String) -> tauri::Result<()> {
-    println!("{:?}", image_database_id);
+async fn copy_image_to_clipboard(image_filename: String) -> tauri::Result<()> {
+    println!("{:?}", image_filename);
     let mut clipboard = arboard::Clipboard::new().unwrap();
 
-    let hash = image_database_id;
-    let database_item = get_clipboard_item(hash.clone());
-    let image_location = get_image_path_from_hash(hash);
+    let database_item = get_clipboard_item(image_filename.clone());
+    let image_location = get_image_path_from_hash(image_filename);
     let imgbuf = image::open(image_location).unwrap();
 
     clipboard

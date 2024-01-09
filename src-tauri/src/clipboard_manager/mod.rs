@@ -3,7 +3,6 @@ use arboard::Clipboard;
 use chrono::{DateTime, Utc};
 use clipboard_master::{CallbackResult, ClipboardHandler};
 use core::hash::Hash;
-use freedesktop_icons::lookup;
 use homedir::get_my_home;
 use image::{DynamicImage, ImageBuffer};
 use once_cell::sync::Lazy;
