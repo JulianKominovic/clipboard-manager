@@ -11,15 +11,17 @@ static WELL_KNOWN_APP_NAME_TRANSLATIONS: Lazy<HashMap<&str, &str>> = Lazy::new(|
 fn lookup_icon(name: &str) -> Option<String> {
     // Using the freedesktop icon theme spec
     for theme in ICON_THEMES.iter() {
-        let icon = freedesktop_icons::lookup(name).with_theme(theme).find();
-        if icon.is_some() {
-            return Some(icon.unwrap().to_str().unwrap().to_string());
-        }
-        let icon_lowercase = freedesktop_icons::lookup(name.to_lowercase().as_str())
+        let name_first_letter_lowercase =
+            name.chars().next().unwrap().to_lowercase().to_string() + &name[1..];
+        let icon_lowercase = freedesktop_icons::lookup(name_first_letter_lowercase.as_str())
             .with_theme(theme)
             .find();
         if icon_lowercase.is_some() {
             return Some(icon_lowercase.unwrap().to_str().unwrap().to_string());
+        }
+        let icon = freedesktop_icons::lookup(name).with_theme(theme).find();
+        if icon.is_some() {
+            return Some(icon.unwrap().to_str().unwrap().to_string());
         }
     }
     None

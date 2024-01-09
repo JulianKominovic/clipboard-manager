@@ -8,7 +8,9 @@ type Props = ClipboardHistoryItemWithImage;
 
 function Content({ imageSrc, text }: Pick<Props, "text" | "imageSrc">) {
   if (imageSrc)
-    return <img src={imageSrc} className="w-full h-full" alt={text} />;
+    return (
+      <img src={imageSrc} className="object-cover w-full h-full" alt={text} />
+    );
   else
     return <pre className="w-full h-full whitespace-break-spaces">{text}</pre>;
 }

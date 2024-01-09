@@ -16,6 +16,7 @@ use std::{
     io::{self},
     path::Path,
     sync::{Arc, Mutex},
+    thread,
     time::SystemTime,
 };
 pub mod helpers;
@@ -127,95 +128,99 @@ pub fn get_image_path_from_hash(hash: String) -> String {
 
 impl ClipboardHandler for Handler {
     fn on_clipboard_change(&mut self) -> CallbackResult {
-        let now = SystemTime::now();
-        let now: DateTime<Utc> = now.into();
-        let now = now.to_rfc3339();
-        let database_path = DATABASE_PATH.lock().unwrap().clone();
-        let mut lock = CLIPBOARD_INSTANCE.lock().unwrap();
-        let (source_app, process_id) = match get_active_window() {
-            Ok(active_window) => {
-                println!("Active window: {:?}", active_window);
-                let source_app = active_window.app_name;
-                let process_id = active_window.process_id;
-                (Some(source_app), Some(process_id))
-            }
-            Err(()) => (None, None),
-        };
-        let source_app_icon = if source_app.clone().is_some() && process_id.clone().is_some() {
-            let source_app = source_app.clone().unwrap();
-            let icon = helpers::find_icon(&source_app, process_id.unwrap());
-            if icon.is_some() {
-                Some(icon.unwrap().to_string())
+        println!("Clipboard changed!");
+        thread::spawn(|| {
+            let (source_app, process_id) = match get_active_window() {
+                Ok(active_window) => {
+                    println!("Active window: {:?}", active_window);
+                    let source_app = active_window.app_name;
+                    let process_id = active_window.process_id;
+                    (Some(source_app), Some(process_id))
+                }
+                Err(()) => (None, None),
+            };
+            let now = SystemTime::now();
+            let now: DateTime<Utc> = now.into();
+            let now = now.to_rfc3339();
+            let database_path = DATABASE_PATH.lock().unwrap().clone();
+            let mut lock = CLIPBOARD_INSTANCE.lock().unwrap();
+            let images_path = Path::new(&database_path).join("images");
+            let image = lock.get_image();
+            let text = lock.get_text();
+            drop(database_path);
+            drop(lock);
+
+            let source_app_icon = if source_app.clone().is_some() && process_id.clone().is_some() {
+                let source_app = source_app.clone().unwrap();
+                let icon = helpers::find_icon(&source_app, process_id.unwrap());
+                if icon.is_some() {
+                    Some(icon.unwrap().to_string())
+                } else {
+                    None
+                }
             } else {
                 None
+            };
+            let source_app = if source_app.clone().is_some() {
+                Some(
+                    source_app
+                        .clone()
+                        .unwrap()
+                        .to_string()
+                        .replace("-", " ")
+                        .replace(".", " "),
+                )
+            } else {
+                None
+            };
+
+            if image.is_ok() {
+                println!("Image is saving");
+                let image = image.unwrap();
+
+                let imgbuf = ImageBuffer::from_raw(
+                    image.width as u32,
+                    image.height as u32,
+                    image.bytes.into_owned(),
+                )
+                .unwrap();
+                let imgbuf = DynamicImage::ImageRgba8(imgbuf);
+
+                let clipboard_item = ClipboardHistoryItem::new(
+                    ClipboardContentType::Image,
+                    None,
+                    None,
+                    now.to_string(),
+                    Some(imgbuf.as_bytes().to_vec()),
+                    Some(image.width as u32),
+                    Some(image.height as u32),
+                    source_app,
+                    source_app_icon,
+                );
+
+                let hash = push_clipboard_item_to_database(clipboard_item);
+                let image_filepath = get_image_path_from_hash(hash);
+                if let Ok(_ret) = fs::create_dir(images_path) {};
+                imgbuf.save(image_filepath).unwrap();
+            } else {
+                if text.is_ok() {
+                    let text = text.unwrap();
+                    let clipboard_item = ClipboardHistoryItem::new(
+                        ClipboardContentType::Text,
+                        Some(text),
+                        None,
+                        now.to_string(),
+                        None,
+                        None,
+                        None,
+                        source_app,
+                        source_app_icon,
+                    );
+
+                    push_clipboard_item_to_database(clipboard_item);
+                }
             }
-        } else {
-            None
-        };
-        let source_app = if source_app.clone().is_some() {
-            Some(
-                source_app
-                    .clone()
-                    .unwrap()
-                    .to_string()
-                    .replace("-", " ")
-                    .replace(".", " "),
-            )
-        } else {
-            None
-        };
-        let image = lock.get_image();
-
-        if image.is_ok() {
-            println!("Image is saving");
-            let image = image.unwrap();
-            let images_path = Path::new(&database_path).join("images");
-
-            let imgbuf = ImageBuffer::from_raw(
-                image.width as u32,
-                image.height as u32,
-                image.bytes.into_owned(),
-            )
-            .unwrap();
-            let imgbuf = DynamicImage::ImageRgba8(imgbuf);
-
-            let clipboard_item = ClipboardHistoryItem::new(
-                ClipboardContentType::Image,
-                None,
-                None,
-                now.to_string(),
-                Some(imgbuf.as_bytes().to_vec()),
-                Some(image.width as u32),
-                Some(image.height as u32),
-                source_app,
-                source_app_icon,
-            );
-
-            let hash = push_clipboard_item_to_database(clipboard_item);
-            let image_filepath = get_image_path_from_hash(hash);
-            if let Ok(_ret) = fs::create_dir(images_path) {};
-            imgbuf.save(image_filepath).unwrap();
-            return CallbackResult::Next;
-        }
-
-        let text = lock.get_text();
-
-        if text.is_ok() {
-            let text = text.unwrap();
-            let clipboard_item = ClipboardHistoryItem::new(
-                ClipboardContentType::Text,
-                Some(text),
-                None,
-                now.to_string(),
-                None,
-                None,
-                None,
-                source_app,
-                source_app_icon,
-            );
-
-            push_clipboard_item_to_database(clipboard_item);
-        }
+        });
 
         CallbackResult::Next
     }
