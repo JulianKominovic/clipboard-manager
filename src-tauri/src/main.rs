@@ -1,16 +1,17 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
+#![feature(async_closure)]
 pub mod clipboard_manager;
 use std::{borrow::Cow, thread};
 
 use arboard::ImageData;
 use clipboard_manager::Handler;
 use clipboard_master::Master;
-use tauri::WindowEvent;
+use tauri::{Manager, WindowEvent};
 
 use crate::clipboard_manager::{
-    get_all_clipboard_items, get_clipboard_item, get_image_path_from_hash, DATABASE_PATH,
+    get_all_clipboard_items, get_clipboard_item, get_image_path_from_hash, DATABASE_INSTANCE,
+    DATABASE_PATH,
 };
 
 /*
@@ -71,7 +72,6 @@ async fn copy_to_clipboard(content_type: String, content: String) -> tauri::Resu
 
 fn main() {
     println!("Main function");
-    println!("{:?}", freedesktop_icons::list_themes());
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_clipboard_history,
@@ -88,6 +88,22 @@ fn main() {
                 let _ = Master::new(Handler).run();
             });
             println!("Clipboard thread spawned");
+            let window = app.get_window("main").unwrap();
+            thread::spawn(move || {
+                println!("Database watch thread spawned");
+                let subscriber = DATABASE_INSTANCE.watch_prefix([]);
+                for event in subscriber {
+                    match event {
+                        sled::Event::Insert { key, value: _value } => {
+                            println!("inserted {:?}", String::from_utf8(key.to_vec()));
+                            window.emit_all("new-clipboard-item", key.to_vec()).unwrap();
+                        }
+                        sled::Event::Remove { key } => {
+                            println!("removed {:?}", String::from_utf8(key.to_vec()));
+                        }
+                    }
+                }
+            });
 
             Ok(())
         })

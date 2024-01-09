@@ -4,7 +4,7 @@ import { useStore } from "./context";
 import Aside from "./sections/Aside";
 import Main from "./sections/Main";
 import { getClipboardHistory } from "./events";
-
+import { listen } from "@tauri-apps/api/event";
 function App() {
   const setClipboardHistoryItems = useStore(
     (state) => state.setClipboardHistoryItems
@@ -14,6 +14,15 @@ function App() {
       setClipboardHistoryItems(history);
       console.log(history);
     });
+    const unlisten = listen("new-clipboard-item", () => {
+      getClipboardHistory().then((history) => {
+        setClipboardHistoryItems(history);
+        console.log(history);
+      });
+    });
+    return () => {
+      unlisten.then((unlisten) => unlisten());
+    };
   }, []);
   return (
     <>
