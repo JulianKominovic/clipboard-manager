@@ -1,7 +1,9 @@
 import React from "react";
-import { ClipboardHistoryItemWithImage } from "../events";
+import { ClipboardContentType, ClipboardHistoryItemWithImage } from "../events";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "../context";
+import { Button } from "../@/components/ui/button";
+import CopyButton from "./CopyButton";
 
 type Props = ClipboardHistoryItemWithImage;
 
@@ -19,10 +21,17 @@ function Card({
   source_app,
   timestamp,
   sourceAppIconSrc,
-}: // text,
-{ children: React.ReactNode } & Pick<
+  text,
+  imageSrc,
+  image_filename,
+}: { children: React.ReactNode } & Pick<
   Props,
-  "source_app" | "timestamp" | "sourceAppIconSrc" | "text"
+  | "source_app"
+  | "timestamp"
+  | "sourceAppIconSrc"
+  | "text"
+  | "imageSrc"
+  | "image_filename"
 >) {
   const settings = useStore((state) => state.settings);
   return (
@@ -32,7 +41,7 @@ function Card({
         settings.preserveWhitespace ? "" : "[&>pre]:whitespace-normal"
       )}
     >
-      <header className="flex items-center gap-2 p-2 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-100">
+      <header className="flex items-center gap-2 px-2 py-1 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-100">
         {sourceAppIconSrc && (
           <img src={sourceAppIconSrc} className="w-5 h-5" alt={source_app} />
         )}
@@ -46,6 +55,15 @@ function Card({
             }).format(new Date(timestamp))}
           </span>
         </div>
+        <CopyButton
+          className="ml-auto"
+          contentType={
+            image_filename
+              ? ClipboardContentType.Image
+              : ClipboardContentType.Text
+          }
+          contentToCopy={(image_filename ? image_filename : text) as string}
+        />
       </header>
       {children}
     </li>
@@ -56,12 +74,10 @@ function GenericCardItem({
   id,
   timestamp,
   imageSrc,
-  // content_type,
-  // image_filename,
-  // source_app_icon,
   sourceAppIconSrc,
   source_app,
   text,
+  image_filename,
 }: Props) {
   return (
     <Card
@@ -70,6 +86,8 @@ function GenericCardItem({
       source_app={source_app}
       sourceAppIconSrc={sourceAppIconSrc}
       text={text}
+      imageSrc={imageSrc}
+      image_filename={image_filename}
     >
       <Content imageSrc={imageSrc} text={text} />
     </Card>

@@ -1,8 +1,10 @@
-import { Copy, Check, Loader2 } from "lucide-react";
+import { Copy, Check, Loader2, Cross } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { ClipboardContentType, copyToClipboard } from "../events";
+import { ClipboardContentType, copyImageToClipboard } from "../events";
 import { toast } from "sonner";
+import { Button } from "../@/components/ui/button";
+import { clipboard } from "@tauri-apps/api";
 
 type CopyButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
   contentToCopy: string;
@@ -10,45 +12,56 @@ type CopyButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
 };
 
 export default function CopyButton(props: CopyButtonProps) {
-  const [copied, setCopied] = useState<"LOADING" | "IDLE" | "COPIED">("IDLE");
+  const [copied, setCopied] = useState<"LOADING" | "IDLE" | "COPIED" | "FAIL">(
+    "IDLE"
+  );
   return (
-    <button
+    <Button
       {...props}
+      variant={"ghost"}
       className={twMerge("relative group", props.className)}
-      onClick={() => {
+      onClick={async () => {
         if (copied !== "IDLE") return;
         setCopied("LOADING");
-        copyToClipboard(props.contentType, props.contentToCopy).finally(() => {
+
+        try {
+          if (props.contentType === ClipboardContentType.Image) {
+            await copyImageToClipboard(props.contentToCopy);
+          }
+          if (props.contentType === ClipboardContentType.Text) {
+            await clipboard.writeText(props.contentToCopy);
+          }
+
           setCopied("COPIED");
-          toast("Copied image to clipboard", {
+          toast("Copied text to clipboard", {
             icon: <Check className="p-1 mr-2 rounded-full text-neutral-500" />,
             important: true,
           });
           setTimeout(() => {
             setCopied("IDLE");
-          }, 1000);
-        });
+          }, 2000);
+        } catch (err) {
+          console.error(err);
+          setCopied("FAIL");
+          setTimeout(() => {
+            setCopied("FAIL");
+          }, 2000);
+          toast("Failed to copy", {
+            icon: <Check className="p-1 mr-2 rounded-full text-neutral-500" />,
+            important: true,
+          });
+        }
       }}
     >
-      {props.children}
-      <span
-        className={twMerge(
-          "absolute top-0 left-0 flex items-center justify-center w-full h-full transition-colors duration-300 group-hover:duration-100 group-hover:bg-black group-hover:bg-opacity-80 group-hover:transition-colors",
-          copied === "IDLE"
-            ? "bg-transparent"
-            : copied === "COPIED"
-            ? "bg-green-500 bg-opacity-80  "
-            : "bg-black bg-opacity-80  "
-        )}
-      >
-        {copied === "IDLE" ? (
-          <Copy className="duration-500 opacity-0 text-neutral-300 group-hover:duration-200 group-hover:opacity-100" />
-        ) : copied === "COPIED" ? (
-          <Check className="duration-500 opacity-0 text-neutral-300 group-hover:duration-200 group-hover:opacity-100" />
-        ) : (
-          <Loader2 className="duration-500 opacity-100 text-neutral-300 group-hover:duration-200 group-hover:opacity-100 animate-spin" />
-        )}
-      </span>
-    </button>
+      {copied === "IDLE" ? (
+        <Copy className="w-4 h-4 " />
+      ) : copied === "COPIED" ? (
+        <Check className="w-4 h-4 " />
+      ) : copied === "FAIL" ? (
+        <Cross className="w-4 h-4 " />
+      ) : (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      )}
+    </Button>
   );
 }

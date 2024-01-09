@@ -40,33 +40,22 @@ async fn get_clipboard_history(
 }
 
 #[tauri::command]
-async fn copy_to_clipboard(content_type: String, content: String) -> tauri::Result<()> {
-    println!("{:?}, {}", content_type, content);
+async fn copy_image_to_clipboard(image_database_id: String) -> tauri::Result<()> {
+    println!("{:?}", image_database_id);
     let mut clipboard = arboard::Clipboard::new().unwrap();
 
-    let content_type = content_type.as_str();
-    match content_type {
-        "Image" => {
-            let hash = content;
-            let database_item = get_clipboard_item(hash.clone());
-            let image_location = get_image_path_from_hash(hash);
-            let imgbuf = image::open(image_location).unwrap();
+    let hash = image_database_id;
+    let database_item = get_clipboard_item(hash.clone());
+    let image_location = get_image_path_from_hash(hash);
+    let imgbuf = image::open(image_location).unwrap();
 
-            clipboard
-                .set_image(ImageData {
-                    bytes: Cow::Owned(imgbuf.as_bytes().to_vec()),
-                    width: database_item.image_width.unwrap() as usize,
-                    height: database_item.image_height.unwrap() as usize,
-                })
-                .unwrap();
-        }
-        "Html" => {
-            clipboard.set_html(content, None).unwrap();
-        }
-        _ => {
-            clipboard.set_text(content).unwrap();
-        }
-    }
+    clipboard
+        .set_image(ImageData {
+            bytes: Cow::Owned(imgbuf.as_bytes().to_vec()),
+            width: database_item.image_width.unwrap() as usize,
+            height: database_item.image_height.unwrap() as usize,
+        })
+        .unwrap();
     Ok(())
 }
 
@@ -75,7 +64,7 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_clipboard_history,
-            copy_to_clipboard
+            copy_image_to_clipboard
         ])
         .setup(|app| {
             let appdir = app.path_resolver().app_data_dir().unwrap();
