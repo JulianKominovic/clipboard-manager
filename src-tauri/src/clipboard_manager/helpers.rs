@@ -52,3 +52,21 @@ pub fn find_icon(name: &str, process_id: u64) -> Option<String> {
 
     icon_path
 }
+
+pub fn get_html_clipboard_content_xclip() -> Option<String> {
+    // xclip -selection clipboard -o -t text/html
+    let html_clipboard_content = match Command::new("xclip")
+        .arg("-selection")
+        .arg("clipboard")
+        .arg("-o")
+        .arg("-t")
+        .arg("text/html")
+        .output()
+    {
+        Ok(html_clipboard_content) => {
+            Some(String::from_utf8(html_clipboard_content.stdout).unwrap())
+        }
+        Err(_) => None,
+    };
+    html_clipboard_content
+}

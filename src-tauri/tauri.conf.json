@@ -60,7 +60,7 @@
       "category": "DeveloperTool",
       "copyright": "",
       "deb": {
-        "depends": []
+        "depends": ["xclip"]
       },
       "externalBin": [],
       "icon": [

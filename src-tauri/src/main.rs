@@ -57,13 +57,24 @@ async fn copy_image_to_clipboard(image_filename: String) -> tauri::Result<()> {
         .unwrap();
     Ok(())
 }
+#[tauri::command]
+async fn copy_html_to_clipboard(database_id: String) -> tauri::Result<()> {
+    println!("{:?}", database_id);
+    let mut clipboard = arboard::Clipboard::new().unwrap();
+
+    let database_item = get_clipboard_item(database_id.clone());
+    let content = database_item.text.unwrap();
+    clipboard.set_html(content, None).unwrap();
+    Ok(())
+}
 
 fn main() {
     println!("Main function");
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_clipboard_history,
-            copy_image_to_clipboard
+            copy_image_to_clipboard,
+            copy_html_to_clipboard
         ])
         .setup(|app| {
             let appdir = app.path_resolver().app_data_dir().unwrap();

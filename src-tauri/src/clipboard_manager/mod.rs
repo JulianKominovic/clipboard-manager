@@ -142,10 +142,12 @@ impl ClipboardHandler for Handler {
             let now: DateTime<Utc> = now.into();
             let now = now.to_rfc3339();
             let database_path = DATABASE_PATH.lock().unwrap().clone();
+            let html_clipboard_content = helpers::get_html_clipboard_content_xclip();
             let mut lock = CLIPBOARD_INSTANCE.lock().unwrap();
             let images_path = Path::new(&database_path).join("images");
             let image = lock.get_image();
             let text = lock.get_text();
+            println!("Text,{:?}. HTML {:?}", text, html_clipboard_content);
             drop(database_path);
             drop(lock);
 
@@ -193,17 +195,19 @@ impl ClipboardHandler for Handler {
                     Some(imgbuf.as_bytes().to_vec()),
                     Some(image.width as u32),
                     Some(image.height as u32),
-                    source_app,
-                    source_app_icon,
+                    source_app.clone(),
+                    source_app_icon.clone(),
                 );
 
                 let hash = push_clipboard_item_to_database(clipboard_item);
                 let image_filepath = get_image_path_from_hash(hash);
                 if let Ok(_ret) = fs::create_dir(images_path) {};
                 imgbuf.save(image_filepath).unwrap();
-            } else {
-                if text.is_ok() {
-                    let text = text.unwrap();
+            }
+
+            if text.is_ok() {
+                let text = text.unwrap();
+                if !text.trim().is_empty() {
                     let clipboard_item = ClipboardHistoryItem::new(
                         ClipboardContentType::Text,
                         Some(text),
@@ -212,12 +216,29 @@ impl ClipboardHandler for Handler {
                         None,
                         None,
                         None,
-                        source_app,
-                        source_app_icon,
+                        source_app.clone(),
+                        source_app_icon.clone(),
                     );
 
                     push_clipboard_item_to_database(clipboard_item);
                 }
+            }
+
+            if html_clipboard_content.is_some() {
+                let html_clipboard_content = html_clipboard_content.unwrap();
+                let clipboard_item = ClipboardHistoryItem::new(
+                    ClipboardContentType::Html,
+                    Some(html_clipboard_content),
+                    None,
+                    now.to_string(),
+                    None,
+                    None,
+                    None,
+                    source_app,
+                    source_app_icon,
+                );
+
+                push_clipboard_item_to_database(clipboard_item);
             }
         });
 
