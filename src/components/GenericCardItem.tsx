@@ -53,7 +53,7 @@ function Card({
   return (
     <li
       className={twMerge(
-        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:h-auto [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-border w-80 h-64 flex flex-col justify-between bg-card",
+        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-border w-80 h-64 flex flex-col justify-between bg-card",
         settings.preserveWhitespace ? "" : "[&>pre]:whitespace-normal"
       )}
     >
