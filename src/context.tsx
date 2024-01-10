@@ -50,11 +50,12 @@ function applyFilters(
     const toDate = filters.byDate?.to && new Date(filters.byDate.to).getTime();
     const dateMatch =
       filters.byDate &&
-      itemTimestamp.getTime() >= fromDate &&
-      itemTimestamp.getTime() <= toDate;
+      itemTimestamp.getTime() >= fromDate! &&
+      itemTimestamp.getTime() <= toDate!;
     return (
       (!filters.byApp || sameAppName) &&
       (!filters.byText || textMatch) &&
+      // @ts-expect-error - No problem comparing undefined with number
       (!filters.byType?.length > 0 || typeMatch) &&
       (!filters.byDate || dateMatch)
     );
