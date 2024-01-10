@@ -232,20 +232,22 @@ impl ClipboardHandler for Handler {
 
             if html_clipboard_content.is_some() {
                 let html_clipboard_content = html_clipboard_content.unwrap();
-                let clipboard_item = ClipboardHistoryItem::new(
-                    ClipboardContentType::Html,
-                    Some(html_clipboard_content),
-                    None,
-                    now.to_string(),
-                    None,
-                    None,
-                    None,
-                    source_app,
-                    source_app_icon,
-                    source_app_window,
-                );
+                if !html_clipboard_content.trim().is_empty() {
+                    let clipboard_item = ClipboardHistoryItem::new(
+                        ClipboardContentType::Html,
+                        Some(html_clipboard_content),
+                        None,
+                        now.to_string(),
+                        None,
+                        None,
+                        None,
+                        source_app.clone(),
+                        source_app_icon.clone(),
+                        source_app_window.clone(),
+                    );
 
-                push_clipboard_item_to_database(clipboard_item);
+                    push_clipboard_item_to_database(clipboard_item);
+                }
             }
         });
 
