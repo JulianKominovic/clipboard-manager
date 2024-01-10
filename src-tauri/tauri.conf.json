@@ -36,6 +36,11 @@
         "scope": [],
         "sidecar": false
       },
+      "clipboard": {
+        "all": true,
+        "readText": false,
+        "writeText": false
+      },
       "app": {
         "all": true,
         "hide": true,

@@ -35,10 +35,10 @@ function applyFilters(
     const textMatch =
       filters.byText &&
       item.text &&
-      item.content_type === "Text" &&
       item.text
         .toLocaleLowerCase()
         .includes(filters.byText.toLocaleLowerCase());
+
     const typeMatch =
       filters.byType &&
       filters.byType.length > 0 &&

@@ -45,9 +45,14 @@ export enum ClipboardContentType {
   File = "File",
   Html = "Html",
 }
-export async function copyImageToClipboard(imageDatabaseId: string) {
+export async function copyImageToClipboard(imageFilename: string) {
   await invoke("copy_image_to_clipboard", {
-    imageDatabaseId,
+    imageFilename,
+  });
+}
+export async function copyHTMLToClipboard(databaseId: string) {
+  await invoke("copy_html_to_clipboard", {
+    databaseId,
   });
 }
 

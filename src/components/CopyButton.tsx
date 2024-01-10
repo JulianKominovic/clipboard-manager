@@ -1,13 +1,19 @@
 import { Copy, Check, Loader2, XIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { ClipboardContentType, copyImageToClipboard } from "../events";
+import {
+  ClipboardContentType,
+  copyHTMLToClipboard,
+  copyImageToClipboard,
+} from "../events";
 import { toast } from "sonner";
 import { Button } from "../@/components/ui/button";
 import { clipboard } from "@tauri-apps/api";
 
 type CopyButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
-  contentToCopy: string;
+  contentToCopy?: string;
+  databaseId?: string;
+  filename?: string;
   contentType: ClipboardContentType;
 };
 
@@ -25,11 +31,29 @@ export default function CopyButton(props: CopyButtonProps) {
         setCopied("LOADING");
 
         try {
-          if (props.contentType === ClipboardContentType.Image) {
-            await copyImageToClipboard(props.contentToCopy);
+          console.log({
+            contentType: props.contentType,
+            filename: props.filename,
+            contentToCopy: props.contentToCopy,
+            databaseId: props.databaseId,
+          });
+          if (
+            props.contentType === ClipboardContentType.Image &&
+            props.filename
+          ) {
+            await copyImageToClipboard(props.filename);
           }
-          if (props.contentType === ClipboardContentType.Text) {
+          if (
+            props.contentType === ClipboardContentType.Text &&
+            props.contentToCopy
+          ) {
             await clipboard.writeText(props.contentToCopy);
+          }
+          if (
+            props.contentType === ClipboardContentType.Html &&
+            props.databaseId
+          ) {
+            await copyHTMLToClipboard(props.databaseId);
           }
 
           setCopied("COPIED");

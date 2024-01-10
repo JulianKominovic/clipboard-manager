@@ -75,10 +75,10 @@ function Card({
           <DeleteButton className="p-1 px-2" itemDatabaseId={id} />
           <CopyButton
             className="p-1 px-2"
-            contentType={
-              imageSrc ? ClipboardContentType.Image : ClipboardContentType.Text
-            }
-            contentToCopy={(imageSrc ? image_filename : text) as string}
+            contentType={content_type}
+            contentToCopy={text}
+            databaseId={id}
+            filename={image_filename}
           />
         </div>
       </header>
