@@ -1,6 +1,6 @@
 [package]
 name = "clippis"
-version = "0.1.0"
+version = "1.0.0"
 description = "Another offline, cool looking, comfortable, clipboard manager."
 authors = ["Julian Kominovic"]
 license = ""
@@ -26,7 +26,6 @@ once_cell = "1.19.0"
 sled = "0.34.7"
 bincode = "1.3.3"
 tokio = { version = "1.35.1", features = ["full"] }
-# base64 = "0.21.5"
 image = "0.24.7"
 rayon = "1.8.0"
 active-win-pos-rs = "0.8.3"

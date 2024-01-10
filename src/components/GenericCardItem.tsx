@@ -2,18 +2,9 @@ import React from "react";
 import { ClipboardContentType, ClipboardHistoryItemWithImage } from "../events";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "../context";
-import { Button } from "../@/components/ui/button";
 import CopyButton from "./CopyButton";
 import DeleteButton from "./DeleteButton";
-import {
-  Bold,
-  Code,
-  Code2,
-  Dot,
-  Image,
-  LucideTextCursor,
-  Text,
-} from "lucide-react";
+import { Bold, Code2, Dot, Image } from "lucide-react";
 
 type Props = ClipboardHistoryItemWithImage;
 
@@ -32,7 +23,6 @@ function Card({
   timestamp,
   sourceAppIconSrc,
   text,
-  imageSrc,
   image_filename,
   content_type,
   source_app_window,

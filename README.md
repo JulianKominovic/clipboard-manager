@@ -1,3 +1,61 @@
+![Clippis icon](Icon.png)
+
+<h1 align="center">Clippis</h1>
+<p align="center">Another offline, cool looking, comfortable, clipboard manager. Built with Tauri for Linux(gnome)</p>
+
+## Screenshots
+
+Captured in Ubuntu 22.04 x11. The app is not optimized for wayland yet.
+![Clippis demo](demo.png)
+![Clippis demo](demo-maximized.png)
+
+## Features
+
+- [x] No internet connection required. - [x] No data is sent to any server.
+- [x] All data is stored locally (scroll down to end of sidebar to see where database is located).
+- [x] Filter by
+  - [x] Text
+  - [x] Type of clipboard item
+  - [x] Date
+  - [x] App where the item was copied
+- [x] Search by text
+- [x] Supports html, text and images (files, uris and urls soon)
+- [x] Delete items from history
+- [x] Copy items from history
+- [x] Clipboard history items groupped by relative date
+- [x] Dark mode
+- [x] Some settings
+
+## Future features
+
+- [ ] Autocompress images
+- [ ] Support for files, uris and urls
+- [ ] Sync across devices in the same network
+- [ ] Blacklist apps
+- [ ] Whitelist apps
+- [ ] Drag and drop items from history
+- [ ] Generate previews for urls, files and uris
+- [ ] UI customization
+- [ ] Virtualization for history item list
+- [ ] Performance improvements (saving images to disk, loading images from disk, loading history items from database, optimizing image processing, etc)
+- [ ] Support for other linux desktop environments
+- [ ] Support for Windows
+- [ ] Support for MacOS
+
+## Installation
+
+1. Install dependencies
+
+```bash
+sudo apt install xclip
+```
+
+2. Download the latest release from [here](https://github.com/JulianKominovic/clipboard-manager/releases/latest)
+3. Download the .deb file
+4. Install it with `sudo apt install <package-downloaded>`
+5. Replace `<package-downloaded>` with the path of the package downloaded in step 2
+6. `Clippis` should be installed now. You can open it from the applications menu or by running `clippis` in the terminal
+
 ## Goal
 
 - [x] Create a simple clipboard manager for linux

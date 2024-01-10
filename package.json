@@ -1,7 +1,7 @@
 {
   "name": "clippis",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -23,6 +23,7 @@
     "clsx": "^2.1.0",
     "date-fns": "^3.0.6",
     "lucide-react": "^0.303.0",
+    "million": "^2.6.4",
     "next-themes": "^0.2.1",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.0",
