@@ -1,4 +1,4 @@
-// import { Checkbox } from "../@/components/ui/checkbox";
+import { Checkbox } from "../@/components/ui/checkbox";
 import { Input } from "../@/components/ui/input";
 import { getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/api/shell";
@@ -22,38 +22,50 @@ function SearchText() {
     </div>
   );
 }
-// const TYPES = ["Image", "Text"];
-// function TypeFilter() {
-//   const setFilters = useStore((state) => state.setFilters);
-//   return TYPES.map((type) => {
-//     return (
-//       <div key={type} className="flex mt-4 mb-4 space-x-2 items-top">
-//         <Checkbox
-//           id={type}
-//           onCheckedChange={(value) => {
-//             if (type === "Image") setFilters({ byType: "image" });
-//             if (type === "Text") setFilters({ byType: "text" });
-//           }}
-//         />
-//         <div className="grid gap-1.5 leading-none">
-//           <label
-//             htmlFor={type}
-//             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-//           >
-//             {type}
-//           </label>
-//           {/* <p className="text-sm text-muted-foreground">
-//             You agree to our Terms of Service and Privacy Policy.
-//           </p> */}
-//         </div>
-//       </div>
-//     );
-//   });
-// }
+function TypeFilter() {
+  const { setFilters, filters } = useStore((state) => ({
+    setFilters: state.setFilters,
+    filters: state.filters,
+  }));
+  console.log(filters.byType);
+  return Object.values(ClipboardContentType).map((type) => {
+    return (
+      <div key={type} className="flex mt-4 mb-4 space-x-2 items-top">
+        <Checkbox
+          id={type}
+          onCheckedChange={(isSelected) => {
+            if (filters.byType) {
+              let typesSelected = [...filters.byType];
+              if (isSelected) {
+                typesSelected = [...typesSelected, type];
+              } else {
+                typesSelected = typesSelected.filter((t) => t !== type);
+              }
+              setFilters({ byType: typesSelected });
+              return;
+            }
+
+            setFilters({ byType: [type] });
+          }}
+        />
+        <div className="grid gap-1.5 leading-none">
+          <label
+            htmlFor={type}
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {type}
+          </label>
+          {/* <p className="text-sm text-muted-foreground">
+            You agree to our Terms of Service and Privacy Policy.
+          </p> */}
+        </div>
+      </div>
+    );
+  });
+}
 
 import * as React from "react";
 import { Calendar as CalendarIcon, Github, HomeIcon } from "lucide-react";
-// import { DateRange } from "react-day-picker";
 
 import { cn } from "../@/lib/utils";
 import { Button } from "../@/components/ui/button";
@@ -75,6 +87,7 @@ import {
   KERNEL_TYPE,
   KERNEL_VERSION,
 } from "../constants";
+import { ClipboardContentType } from "../events";
 const INTL_DATEPICKER_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",
   month: "2-digit",
@@ -313,8 +326,8 @@ export default function Aside() {
       <AppListFilter />
       <Separator>Search filters</Separator>
       <SearchText />
-      {/* <TypeFilter /> */}
       <DatePickerWithRange />
+      <TypeFilter />
       <Separator>Settings</Separator>
       <PreserveWhitespace />
       <ThemeSwitcher />

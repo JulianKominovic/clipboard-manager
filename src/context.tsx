@@ -9,7 +9,7 @@ type Context = {
       from: Date | undefined;
       to: Date | undefined;
     };
-    byType?: ClipboardHistoryItemWithImage["content_type"];
+    byType?: ClipboardHistoryItemWithImage["content_type"][];
     byText?: string;
   };
   settings: {
@@ -39,7 +39,10 @@ function applyFilters(
       item.text
         .toLocaleLowerCase()
         .includes(filters.byText.toLocaleLowerCase());
-    const typeMatch = filters.byType && item.content_type === filters.byType;
+    const typeMatch =
+      filters.byType &&
+      filters.byType.length > 0 &&
+      filters.byType.includes(item.content_type);
     const itemTimestamp = new Date(item.timestamp);
 
     const fromDate =
@@ -52,7 +55,7 @@ function applyFilters(
     return (
       (!filters.byApp || sameAppName) &&
       (!filters.byText || textMatch) &&
-      (!filters.byType || typeMatch) &&
+      (!filters.byType?.length > 0 || typeMatch) &&
       (!filters.byDate || dateMatch)
     );
   });
