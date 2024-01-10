@@ -9,7 +9,7 @@ type Context = {
       from: Date | undefined;
       to: Date | undefined;
     };
-    byType?: string;
+    byType?: ClipboardHistoryItemWithImage["content_type"];
     byText?: string;
   };
   settings: {
@@ -42,10 +42,13 @@ function applyFilters(
     const typeMatch = filters.byType && item.content_type === filters.byType;
     const itemTimestamp = new Date(item.timestamp);
 
+    const fromDate =
+      filters.byDate?.from && new Date(filters.byDate.from).getTime();
+    const toDate = filters.byDate?.to && new Date(filters.byDate.to).getTime();
     const dateMatch =
       filters.byDate &&
-      itemTimestamp.getTime() >= filters.byDate.from?.getTime()! &&
-      itemTimestamp.getTime() <= filters.byDate.to?.getTime()!;
+      itemTimestamp.getTime() >= fromDate &&
+      itemTimestamp.getTime() <= toDate;
     return (
       (!filters.byApp || sameAppName) &&
       (!filters.byText || textMatch) &&
@@ -84,12 +87,19 @@ export const useStore = create(
         preserveWhitespace: false,
       },
       setSettings: (settings) => {
-        set((state) => ({
-          settings: {
-            ...state.settings,
-            ...settings,
-          },
-        }));
+        set((state) => {
+          if (settings.theme === "dark") {
+            document.body.classList.add("dark");
+          } else {
+            document.body.classList.remove("dark");
+          }
+          return {
+            settings: {
+              ...state.settings,
+              ...settings,
+            },
+          };
+        });
       },
 
       availableFilters: {

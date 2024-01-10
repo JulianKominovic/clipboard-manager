@@ -5,9 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tauri + React + TS</title>
+    <script>
+      const settingsString = localStorage.getItem("settings");
+      if (settingsString) {
+        const { settings } = JSON.parse(settingsString);
+        const { theme } = settings;
+        if (theme === "dark") document.body.classList.add("dark");
+        else document.body.classList.remove("dark");
+      }
+    </script>
   </head>
 
-  <body class="w-full h-screen bg-white">
+  <body class="w-full h-screen bg-background dark">
     <div id="root" class="h-full"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

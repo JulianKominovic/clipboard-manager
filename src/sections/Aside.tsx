@@ -215,7 +215,7 @@ function SwitchSetting({
   subtitle: string;
 }) {
   return (
-    <div className="flex items-start space-x-2">
+    <div className="flex items-start mb-4 space-x-2">
       <Switch
         id="preserve-whitespace"
         defaultChecked={defaultChecked}
@@ -248,6 +248,22 @@ function PreserveWhitespace() {
       title="Preserve whitespace"
       subtitle="Text preview will be trimmed.
     This settings is ONLY VISUAL."
+    />
+  );
+}
+function ThemeSwitcher() {
+  const { settings, setSettings } = useStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+  return (
+    <SwitchSetting
+      defaultChecked={settings.theme === "dark"}
+      onCheckedChange={(value) =>
+        setSettings({ theme: value ? "dark" : "light" })
+      }
+      title="Dark mode"
+      subtitle=""
     />
   );
 }
@@ -284,7 +300,7 @@ function Footer() {
 
 export default function Aside() {
   return (
-    <aside className="flex-shrink-0 h-full p-2 pl-1 pr-4 overflow-x-hidden overflow-y-scroll bg-white border-r border-neutral-200 w-80">
+    <aside className="flex-shrink-0 h-full p-2 pl-1 pr-4 overflow-x-hidden overflow-y-scroll border-r border-border w-80">
       <div className="flex flex-col items-center mb-8">
         <img src={icon} width={256} height={256} className="mx-auto" />
         <h1 className="text-2xl font-semibold text-center text-foreground">
@@ -301,6 +317,7 @@ export default function Aside() {
       <DatePickerWithRange />
       <Separator>Settings</Separator>
       <PreserveWhitespace />
+      <ThemeSwitcher />
       <Separator>Stats</Separator>
       <StatItem title="Version" value={appVersion} />
       <StatItem title="Database path" value={APP_DATA_DIR} />

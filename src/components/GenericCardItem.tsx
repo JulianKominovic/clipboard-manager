@@ -50,18 +50,18 @@ function Card({
   return (
     <li
       className={twMerge(
-        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:h-auto [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-neutral-200 bg-white w-80 h-64 flex flex-col justify-between",
+        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:h-auto [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-border w-80 h-64 flex flex-col justify-between",
         settings.preserveWhitespace ? "" : "[&>pre]:whitespace-normal"
       )}
     >
-      <header className="flex items-center gap-2 px-2 py-1 text-xs leading-tight border-b bg-neutral-100 text-muted-foreground border-neutral-200">
+      <header className="flex items-center gap-2 px-2 py-1 text-xs leading-tight border-b bg-secondary border-border">
         {sourceAppIconSrc && (
           <img src={sourceAppIconSrc} className="w-5 h-5" alt={source_app} />
         )}
 
         <div className="flex flex-col">
           <span>{source_app}</span>
-          <span className="font-medium text-neutral-900">
+          <span className="font-medium text-muted-foreground">
             {Intl.DateTimeFormat(undefined, {
               timeStyle: "short",
               dateStyle: "long",
@@ -77,7 +77,7 @@ function Card({
         />
       </header>
       {children}
-      <footer className="flex items-center flex-shrink-0 gap-1 px-4 text-xs h-7 bg-neutral-100 text-muted-foreground border-neutral-200">
+      <footer className="flex items-center flex-shrink-0 gap-1 px-4 text-xs h-7 bg-secondary text-secondary-foreground border-border">
         {content_type === ClipboardContentType.Html ? (
           <Code2 className="w-4 h-4" />
         ) : content_type === ClipboardContentType.Image ? (
