@@ -50,3 +50,9 @@ export async function copyImageToClipboard(imageDatabaseId: string) {
     imageDatabaseId,
   });
 }
+
+export async function deleteEntry(databaseId: string) {
+  await invoke("delete_entry", {
+    databaseId,
+  });
+}

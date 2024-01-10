@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { useStore } from "../context";
 import { Button } from "../@/components/ui/button";
 import CopyButton from "./CopyButton";
+import DeleteButton from "./DeleteButton";
 import {
   Bold,
   Code,
@@ -35,6 +36,7 @@ function Card({
   image_filename,
   content_type,
   source_app_window,
+  id,
 }: { children: React.ReactNode } & Pick<
   Props,
   | "source_app"
@@ -45,12 +47,13 @@ function Card({
   | "image_filename"
   | "content_type"
   | "source_app_window"
+  | "id"
 >) {
   const settings = useStore((state) => state.settings);
   return (
     <li
       className={twMerge(
-        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:h-auto [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-border w-80 h-64 flex flex-col justify-between",
+        "[&>pre]:p-2 overflow-hidden border rounded-md [&>pre]:w-full [&>pre]:h-auto [&>pre]:py-4 [&>pre]:overflow-auto [&__code]:max-w-xs border-border w-80 h-64 flex flex-col justify-between bg-card",
         settings.preserveWhitespace ? "" : "[&>pre]:whitespace-normal"
       )}
     >
@@ -68,13 +71,16 @@ function Card({
             }).format(new Date(timestamp))}
           </span>
         </div>
-        <CopyButton
-          className="ml-auto"
-          contentType={
-            imageSrc ? ClipboardContentType.Image : ClipboardContentType.Text
-          }
-          contentToCopy={(imageSrc ? image_filename : text) as string}
-        />
+        <div className="flex gap-1 ml-auto">
+          <DeleteButton className="p-1 px-2" itemDatabaseId={id} />
+          <CopyButton
+            className="p-1 px-2"
+            contentType={
+              imageSrc ? ClipboardContentType.Image : ClipboardContentType.Text
+            }
+            contentToCopy={(imageSrc ? image_filename : text) as string}
+          />
+        </div>
       </header>
       {children}
       <footer className="flex items-center flex-shrink-0 gap-1 px-4 text-xs h-7 bg-secondary text-secondary-foreground border-border">
@@ -107,6 +113,7 @@ function GenericCardItem({
   return (
     <Card
       key={id}
+      id={id}
       timestamp={timestamp}
       source_app={source_app}
       sourceAppIconSrc={sourceAppIconSrc}

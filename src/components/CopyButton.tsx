@@ -1,4 +1,4 @@
-import { Copy, Check, Loader2, Cross } from "lucide-react";
+import { Copy, Check, Loader2, XIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ClipboardContentType, copyImageToClipboard } from "../events";
@@ -42,7 +42,7 @@ export default function CopyButton(props: CopyButtonProps) {
           setCopied("FAIL");
 
           toast("Failed to copy", {
-            icon: <Check className="p-1 mr-2 rounded-full text-neutral-500" />,
+            icon: <XIcon className="p-1 mr-2 rounded-full text-neutral-500" />,
             important: true,
           });
         } finally {
@@ -57,7 +57,7 @@ export default function CopyButton(props: CopyButtonProps) {
       ) : copied === "COPIED" ? (
         <Check className="w-4 h-4 " />
       ) : copied === "FAIL" ? (
-        <Cross className="w-4 h-4 " />
+        <XIcon className="w-4 h-4 " />
       ) : (
         <Loader2 className="w-4 h-4 animate-spin" />
       )}

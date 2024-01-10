@@ -67,6 +67,12 @@ async fn copy_html_to_clipboard(database_id: String) -> tauri::Result<()> {
     clipboard.set_html(content, None).unwrap();
     Ok(())
 }
+#[tauri::command]
+async fn delete_entry(database_id: String) -> tauri::Result<()> {
+    println!("Deleting {:?}", database_id);
+    DATABASE_INSTANCE.remove(database_id.as_bytes()).unwrap();
+    Ok(())
+}
 
 fn main() {
     println!("Main function");
@@ -74,7 +80,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_clipboard_history,
             copy_image_to_clipboard,
-            copy_html_to_clipboard
+            copy_html_to_clipboard,
+            delete_entry
         ])
         .setup(|app| {
             let appdir = app.path_resolver().app_data_dir().unwrap();
@@ -99,6 +106,7 @@ fn main() {
                         }
                         sled::Event::Remove { key } => {
                             println!("removed {:?}", String::from_utf8(key.to_vec()));
+                            window.emit_all("new-clipboard-item", key.to_vec()).unwrap();
                         }
                     }
                 }
